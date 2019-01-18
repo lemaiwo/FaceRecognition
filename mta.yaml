@@ -1,0 +1,79 @@
+ID: FaceRecognition
+_schema-version: '2.1'
+parameters:
+  deploy_mode: html5-repo
+version: 0.0.1
+modules:
+  - name: FaceRecognition_appRouter
+    type: approuter.nodejs
+    path: FaceRecognition_appRouter
+    parameters:
+      disk-quota: 256M
+      memory: 256M
+    requires:
+      - name: rt_FaceRecognition_appRouter
+      - name: uaa_FaceRecognition
+  - name: FaceRecognition_ui_deployer
+    type: com.sap.html5.application-content
+    path: FaceRecognition_ui_deployer
+    requires:
+      - name: dt_FaceRecognition_ui_deployer
+    build-parameters:
+      requires:
+        - name: FaceUI
+          artifacts:
+            - './*'
+          target-path: resources/FaceUI
+  - name: FaceRecognition-db
+    type: hdb
+    path: db
+    parameters:
+      memory: 256M
+      disk-quota: 256M
+    requires:
+      - name: FaceRecognition-hdi-container
+  - name: FaceRecognition-srv
+    type: java
+    path: srv
+    parameters:
+      memory: 1024M
+      disk-quota: 256M
+    provides:
+      - name: srv_api
+        properties:
+          url: '${default-url}'
+    requires:
+      - name: FaceRecognition-hdi-container
+        properties:
+          JBP_CONFIG_RESOURCE_CONFIGURATION: '[tomcat/webapps/ROOT/META-INF/context.xml: {"service_name_for_DefaultDB" : "~{hdi-container-name}"}]'
+  - name: FaceUI
+    type: html5
+    path: FaceUI
+    build-parameters:
+      builder: grunt
+resources:
+  - name: rt_FaceRecognition_appRouter
+    parameters:
+      service-plan: app-runtime
+      service: html5-apps-repo
+    type: org.cloudfoundry.managed-service
+  - name: dt_FaceRecognition_ui_deployer
+    parameters:
+      service-plan: app-host
+      service: html5-apps-repo
+    type: org.cloudfoundry.managed-service
+  - name: FaceRecognition-hdi-container
+    properties:
+      hdi-container-name: '${service-name}'
+    type: com.sap.xs.hdi-container
+  - name: uaa_FaceRecognition
+    parameters:
+      path: ./xs-security.json
+      service-plan: application
+      service: xsuaa
+    type: org.cloudfoundry.managed-service
+  - name: dest_FaceRecognition
+    parameters:
+      service-plan: lite
+      service: destination
+    type: org.cloudfoundry.managed-service

@@ -1,0 +1,40 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core">
+	<Dialog title="New Person" showHeader="true" contentWidth="400px">
+		<customHeader>
+			<Toolbar>
+				<ToolbarSpacer/>
+				<Label text="New person"/>
+				<ToolbarSpacer/>
+				<Button icon="sap-icon://decline" press=".onClose"/>
+			</Toolbar>
+		</customHeader>
+		<content>
+			<VBox class="sapUiSmallMargin">
+				<f:SimpleForm visible="{= !!${/newFace}}" editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3"
+					labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"
+					singleContainerFullSize="false">
+					<f:content>
+						<Label text="Firstname"/>
+						<Input value="{/newFace/firstname}"/>
+						<Label text="Lastname"/>
+						<Input value="{/newFace/lastname}"/>
+					</f:content>
+				</f:SimpleForm>
+				<f:SimpleForm visible="{= !!${/foundFace}}" editable="false" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3"
+					labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"
+					singleContainerFullSize="false">
+					<f:content>
+						<Label text="Firstname"/>
+						<Text text="{/foundFace/firstname}"/>
+						<Label text="Lastname"/>
+						<Text text="{/foundFace/lastname}"/>
+					</f:content>
+				</f:SimpleForm>
+				<Image src="{/newFace/imageString}" densityAware="false" width="350px"></Image>
+			</VBox>
+		</content>
+		<buttons>
+			<Button icon="sap-icon://save" visible="{= !!${/newFace}}" press=".onAdd"></Button>
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

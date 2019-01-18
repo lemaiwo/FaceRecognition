@@ -1,0 +1,33 @@
+<mvc:View controllerName="be.wl.ml.FaceUI.controller.App" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:mvc="sap.ui.core.mvc"
+	displayBlock="true" xmlns="sap.m" xmlns:u="sap.ui.unified" xmlns:core="sap.ui.core">
+	<App id="idAppControl">
+		<pages>
+			<Page title="{i18n>title}" busy="{/busy}">
+				<content>
+					<Panel expandable="false" expanded="true">
+						<headerToolbar>
+							<Toolbar >
+								<Title text="Test image classification"/>
+								<ToolbarSpacer/>
+								<u:FileUploader name="myFileUpload" buttonOnly="true" icon="sap-icon://add-employee" iconOnly="true"
+									tooltip="Upload your file to the local server" sameFilenameAllowed="true" change=".addPhoto"/>
+								<u:FileUploader name="myFileUploadcheck" buttonOnly="true" icon="sap-icon://add-photo" iconOnly="true"
+									tooltip="Upload your file to the local server" sameFilenameAllowed="true" change=".checkPhoto"/>
+							</Toolbar>
+						</headerToolbar>
+						<content>
+							<List items="{path: '/faces'}">
+								<CustomListItem>
+									<HBox>
+										<Label text="{firstname} {lastname}"/>
+										<Image src="{imageString}" width="200px" height="200px"/>
+									</HBox>
+								</CustomListItem>
+							</List>
+						</content>
+					</Panel>
+				</content>
+			</Page>
+		</pages>
+	</App>
+</mvc:View>
