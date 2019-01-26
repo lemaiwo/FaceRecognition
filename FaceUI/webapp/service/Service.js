@@ -116,7 +116,7 @@ sap.ui.define([
 							client.send();
 						}
 						client.onload = function () {
-							if (this.status == 200) {
+							if (this.status == 200 || this.status == 201) {
 								// Performs the function "resolve" when this.status is equal to 200
 								resolve(this.response);
 							} else {

@@ -20,7 +20,8 @@
 								<CustomListItem>
 									<HBox>
 										<Label text="{firstname} {lastname}"/>
-										<Image src="{imageString}" width="200px" height="200px"/>
+										<Image src="{imageuri}" width="200px" height="200px"/>
+										<Button icon="sap-icon://delete" press="onDeleteFace"/>
 									</HBox>
 								</CustomListItem>
 							</List>

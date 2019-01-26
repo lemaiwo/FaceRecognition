@@ -10,20 +10,31 @@ sap.ui.define([
 				lastname: 'string',
 				image: 'string',
 				imageString:'string',
-				vector: 'object'
+				vector: 'object',
+				imageblob: 'object',
+				imageuri:"string"
 			},
 			aggregations: {
 			},
 			events: {
 			}
 		},
+		init: function () {
+			
+		},
 		getFlatFace:function(){
 			return {
+				ID:this.getFaceid(),
 				Firstname:this.getFirstname(),
 				Lastname:this.getLastname(),
-				Vectors:JSON.stringify(this.getVector()),
-				Image:this.getImageString()
+				Vectors:JSON.stringify(this.getVector())
 			};
+		},
+		generateImageuri:function(){
+			this.setImageuri("/cmis/0d1793f590788bc65bc9b3c5/root/"+this.getImagename());
+		},
+		getImagename:function(){
+			return this.getFirstname()+"-"+this.getLastname()+"-"+this.getFaceid() +".jpg";// this.getImageblob().name.substr(this.getImageblob().name.lastIndexOf("."));
 		},
 		hasVectors:function(){
 			return this.getVector() && this.getVector().length > 0;

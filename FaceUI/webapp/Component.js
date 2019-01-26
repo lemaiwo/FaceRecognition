@@ -3,7 +3,7 @@ sap.ui.define([
 	"sap/ui/Device",
 	"./service/FaceService",
 	"be/wl/ml/FaceUI/model/models"
-], function (UIComponent, Device, FaceService, models) {
+], function (UIComponent, Device, FaceService,models) {
 	"use strict";
 
 	return UIComponent.extend("be.wl.ml.FaceUI.Component", {

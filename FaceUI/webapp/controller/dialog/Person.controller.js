@@ -1,6 +1,7 @@
 sap.ui.define(["../BaseController",
-	"sap/m/MessageBox"
-], function (BaseController, MessageBox, Fragment, ValidateDelegation, JSONModel) {
+	"sap/m/MessageBox",
+	"sap/m/MessageToast"
+], function (BaseController, MessageBox, MessageToast) {
 	"use strict";
 	return BaseController.extend("be.wl.ml.FaceUI.controller.dialog.Person", {
 		onBeforeShow: function (parent, fragment, callback, data) {
@@ -14,7 +15,9 @@ sap.ui.define(["../BaseController",
 			}
 		},
 		onAdd: function (oEvent) {
-			this.parent._oFaceState.createFace();
+			this.parent._oFaceState.createFace().catch(function(error){
+				MessageToast.show(this.parent.getResourceBundle().getText(error.id,error && error.error && error.error.message?error.error.message:""));
+			}.bind(this));
 			this.fragment.close();
 		},
 		onClose: function () {
