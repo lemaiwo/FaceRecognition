@@ -61,36 +61,54 @@ sap.ui.define([
 			}.bind(this));
 		},
 		deleteFace: function (oFace) {
-			return Promise.all([RepoService.deleteFile(oFace.getImagename()), FaceService.deleteFace(oFace)]);
+			return RepoService.deleteFile(oFace.getImagename()).then(FaceService.deleteFace.bind(FaceService, oFace));
 		},
 		createFace: function () {
-			return FaceService.getMaxFaceId()
+			return FaceService.createFace(this.getNewFace())
 				.then(function (response) {
-					var iNewID = ++response.data.results[0].ID;
-					this.getNewFace().setFaceid(iNewID);
-					return iNewID;
-				}.bind(this))
-				.then(function () {
-					return RepoService.uploadFile(this.getNewFace().getImageblob().content, this.getNewFace().getImagename());
-				}.bind(this))
-				.catch(function (error) {
+					this.addFace(this.getNewFace());
+					return this.getNewFace();
+				}.bind(this)).catch(function (error) {
 					return Promise.reject({
-						id: "ERROR_UPLOAD",
+						id: "ERROR_CREATE_FACE",
 						error: error
 					});
-				})
-				.then(function () {
-					return FaceService.createFace(this.getNewFace())
-						.then(function (response) {
-							this.addFace(this.getNewFace());
-							return this.getNewFace();
-						}.bind(this)).catch(function (error) {
+				}).then(function () {
+					return RepoService.uploadFile(this.getNewFace().getImageblob().content, this.getNewFace().getImagename())
+						.catch(function (error) {
 							return Promise.reject({
-								id: "ERROR_CREATE_FACE",
+								id: "ERROR_UPLOAD",
 								error: error
 							});
 						});
 				}.bind(this));
+			// return FaceService.getMaxFaceId()
+			// 	.then(function (response) {
+			// 		var iNewID = ++response.data.results[0].ID;
+			// 		this.getNewFace().setFaceid(iNewID);
+			// 		return iNewID;
+			// 	}.bind(this))
+			// 	.then(function () {
+			// 		return RepoService.uploadFile(this.getNewFace().getImageblob().content, this.getNewFace().getImagename());
+			// 	}.bind(this))
+			// 	.catch(function (error) {
+			// 		return Promise.reject({
+			// 			id: "ERROR_UPLOAD",
+			// 			error: error
+			// 		});
+			// 	})
+			// 	.then(function () {
+			// 		return FaceService.createFace(this.getNewFace())
+			// 			.then(function (response) {
+			// 				this.addFace(this.getNewFace());
+			// 				return this.getNewFace();
+			// 			}.bind(this)).catch(function (error) {
+			// 				return Promise.reject({
+			// 					id: "ERROR_CREATE_FACE",
+			// 					error: error
+			// 				});
+			// 			});
+			// 	}.bind(this));
 		},
 		compareFace: function (file) {
 			return this.getFaceFeatures(file).then(function (response) {

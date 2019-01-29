@@ -25,13 +25,13 @@ sap.ui.define([
 			return this.odata("/Face").get();
 		},
 		createFace:function(oFace){
-			return this.odata("/Face").post(oFace.getFlatFace());
-			// return this.getMaxFaceId().then(function(response){
-			// 	var oFaceObj = oFace.getFlatFace();
-			// 	oFaceObj.ID = ++response.data.results[0].ID;
-			// 	oFace.setFaceid(oFaceObj.ID);
-			// 	return this.odata("/Face").post(oFaceObj);
-			// }.bind(this));
+			// return this.odata("/Face").post(oFace.getFlatFace());
+			return this.getMaxFaceId().then(function(response){
+				var oFaceObj = oFace.getFlatFace();
+				oFaceObj.ID = ++response.data.results[0].ID;
+				oFace.setFaceid(oFaceObj.ID);
+				return this.odata("/Face").post(oFaceObj);
+			}.bind(this));
 			
 		},
 		deleteFace:function(oFace){
