@@ -12,7 +12,8 @@ sap.ui.define([
 				imageString:'string',
 				vector: 'object',
 				imageblob: 'object',
-				imageuri:"string"
+				imageuri:"string",
+				originName:"string"
 			},
 			aggregations: {
 			},
@@ -27,14 +28,21 @@ sap.ui.define([
 				ID:this.getFaceid(),
 				Firstname:this.getFirstname(),
 				Lastname:this.getLastname(),
-				Vectors:JSON.stringify(this.getVector())
+				Vectors:JSON.stringify(this.getVector()),
+				Image:this.getImageuri()
 			};
 		},
 		generateImageuri:function(){
-			this.setImageuri("/cmis/0d1793f590788bc65bc9b3c5/root/"+this.getImagename());
+			this.setImageuri(this.getGeneratedImageuri());
+		},
+		getGeneratedImageuri:function(){
+			return "/cmis/0d1793f590788bc65bc9b3c5/root/"+this.getImagename(); 
 		},
 		getImagename:function(){
-			return this.getFirstname()+"-"+this.getLastname()+"-"+this.getFaceid() +".jpg";// this.getImageblob().name.substr(this.getImageblob().name.lastIndexOf("."));
+			if(this.getOriginName()){
+				return this.getFirstname()+"-"+this.getLastname()+"-"+this.getFaceid() +this.getOriginName().substr(this.getOriginName().lastIndexOf("."));
+			}
+			return false;
 		},
 		hasVectors:function(){
 			return this.getVector() && this.getVector().length > 0;

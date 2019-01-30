@@ -39,9 +39,9 @@ sap.ui.define([
 						firstname: oFaceData.Firstname,
 						lastname: oFaceData.Lastname,
 						vector: JSON.parse(oFaceData.Vectors),
-						image: oFaceData.Image
+						imageuri: oFaceData.Image
 					});
-					oFace.generateImageuri();
+					//oFace.generateImageuri();
 					this.addFace(oFace);
 				}.bind(this));
 				return this.getFaces();
@@ -53,7 +53,8 @@ sap.ui.define([
 					// image: URL.createObjectURL(file.content),
 					imageString: file.uri,
 					vector: JSON.parse(response).predictions[0].faces[0].face_feature,
-					imageblob: file
+					imageblob: file.content,
+					originName:file.name
 				});
 				this.setNewFace(oFace);
 				// this.addFace(oFace);
@@ -61,7 +62,18 @@ sap.ui.define([
 			}.bind(this));
 		},
 		deleteFace: function (oFace) {
-			return RepoService.deleteFile(oFace.getImagename()).then(FaceService.deleteFace.bind(FaceService, oFace));
+			return Promise.all([RepoService.deleteFile(oFace.getImagename()),FaceService.deleteFace(oFace)]).catch(function(oError){
+				return oError;
+			}).then(function(){
+				this.removeFace(oFace);
+				return oFace;
+			}.bind(this));
+			// if(oFace.getImageuri()){
+			// 	return RepoService.deleteFile(oFace.getImagename()).then(FaceService.deleteFace.bind(FaceService, oFace));
+			// }else{
+			// 	return FaceService.deleteFace(oFace);
+			// }
+			
 		},
 		createFace: function () {
 			return FaceService.createFace(this.getNewFace())
@@ -74,7 +86,10 @@ sap.ui.define([
 						error: error
 					});
 				}).then(function () {
-					return RepoService.uploadFile(this.getNewFace().getImageblob().content, this.getNewFace().getImagename())
+					return RepoService.uploadFile(this.getNewFace().getImageblob(), this.getNewFace().getImagename())
+						.then(function(){
+							this.getNewFace().generateImageuri();
+						}.bind(this))
 						.catch(function (error) {
 							return Promise.reject({
 								id: "ERROR_UPLOAD",

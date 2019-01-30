@@ -28,8 +28,12 @@ sap.ui.define([
 			// return this.odata("/Face").post(oFace.getFlatFace());
 			return this.getMaxFaceId().then(function(response){
 				var oFaceObj = oFace.getFlatFace();
-				oFaceObj.ID = ++response.data.results[0].ID;
+				oFaceObj.ID = response.data.results && response.data.results.length > 0 ?  ++response.data.results[0].ID : 1;
 				oFace.setFaceid(oFaceObj.ID);
+				oFaceObj.Image = oFace.getGeneratedImageuri();
+				// oFace.setFaceid(++response.data.results[0].ID); 
+				// oFace.generateImageuri();
+				// var oFaceObj = oFace.getFlatFace();
 				return this.odata("/Face").post(oFaceObj);
 			}.bind(this));
 			
