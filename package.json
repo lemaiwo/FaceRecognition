@@ -7,7 +7,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "build": "cds build --clean",
+    "build": "cds build --clean && cds compile db/data-model.cds -o ./",
     "watch": "nodemon -w . -i node_modules/**,.git/** -e cds -x npm run build"
   },
   "cds": {
