@@ -29,6 +29,20 @@ sap.ui.define([
 				});
 			}.bind(this));
 		},
+		testCheckPhoto:function(oEvent){
+			var me = this;
+			var file = oEvent.getParameter("files")[0];
+			return ImageHandler.resize(file).then(function (image) {
+				return me._oFaceState.testCompareFace({
+					content: image.blob,
+					name: file.name
+				});
+			}).then(function () {
+				// return this.openFragment("be.wl.ml.FaceUI.view.dialog.Person", this._oFaceState.getModel(), true, false, {
+				// 	editable: false
+				// });
+			}.bind(this));
+		},
 		checkPhoto: function (oEvent) {
 			var me = this;
 			var file = oEvent.getParameter("files")[0];

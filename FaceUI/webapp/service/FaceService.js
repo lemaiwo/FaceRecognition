@@ -14,21 +14,30 @@ sap.ui.define([
 		setClientSecret: function (clientsecret) {
 			this.clientsecret = clientsecret;
 		},
-		getMaxFaceId:function(){
-			return this.odata("/Face").get({urlParameters:{
-					$select:"ID",
+		getMaxFaceId: function () {
+			return this.odata("/Face").get({
+				urlParameters: {
+					$select: "ID",
 					$top: 1,
-					$orderby:"ID desc"
-			}});
+					$orderby: "ID desc"
+				}
+			});
 		},
-		getFaces:function(){
+		testCompareVectors: function (sNewVector) {
+			return this.odata("/getAllVectors").get({
+				urlParameters: {
+					NewVector: sNewVector
+				}
+			});
+		},
+		getFaces: function () {
 			return this.odata("/Face").get();
 		},
-		createFace:function(oFace){
+		createFace: function (oFace) {
 			// return this.odata("/Face").post(oFace.getFlatFace());
-			return this.getMaxFaceId().then(function(response){
+			return this.getMaxFaceId().then(function (response) {
 				var oFaceObj = oFace.getFlatFace();
-				oFaceObj.ID = response.data.results && response.data.results.length > 0 ?  ++response.data.results[0].ID : 1;
+				oFaceObj.ID = response.data.results && response.data.results.length > 0 ? ++response.data.results[0].ID : 1;
 				oFace.setFaceid(oFaceObj.ID);
 				oFaceObj.Image = oFace.getGeneratedImageuri();
 				// oFace.setFaceid(++response.data.results[0].ID); 
@@ -36,9 +45,9 @@ sap.ui.define([
 				// var oFaceObj = oFace.getFlatFace();
 				return this.odata("/Face").post(oFaceObj);
 			}.bind(this));
-			
+
 		},
-		deleteFace:function(oFace){
+		deleteFace: function (oFace) {
 			var sObjectPath = this.model.createKey("/Face", {
 				ID: oFace.getFaceid()
 			});
@@ -64,8 +73,8 @@ sap.ui.define([
 		},
 		compareFaces: function (token, oVectors) {
 			var headers = {
-				"authorization": "Bearer " + token//,
-				// "Content-Type": "multipart/form-data",
+				"authorization": "Bearer " + token //,
+					// "Content-Type": "multipart/form-data",
 					// "accept": "application/json"
 			};
 			var body = {

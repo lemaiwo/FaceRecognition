@@ -43,12 +43,16 @@ modules:
         properties:
           url: '${default-url}'
     requires:
+      - name: ml-service
       - name: FaceRecognition-hdi-container
         properties:
           JBP_CONFIG_RESOURCE_CONFIGURATION: '[tomee/webapps/ROOT/WEB-INF/resources.xml:{"service_name_for_DefaultDB" : "~{hdi-container-name}"}]'
     properties:
        TARGET_RUNTIME: tomee
        buildpack: sap_java_buildpack
+       ALLOW_MOCKED_AUTH_HEADER: true
+       JAVA_OPTS: '-XX:MaxMetaspaceSize=256M'
+       JBP_CONFIG_SAPJVM_MEMORY_SIZES: 'metaspace:256m..'
   - name: FaceUI
     type: html5
     path: FaceUI
@@ -80,3 +84,8 @@ resources:
       service-plan: lite
       service: destination
     type: org.cloudfoundry.managed-service
+  - name: ml-service
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: ml-foundation-trial-beta
+      service-plan: standard
