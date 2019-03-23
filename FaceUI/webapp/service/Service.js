@@ -51,6 +51,9 @@ sap.ui.define([
 				},
 				'delete': function (params) {
 					return core.ajax('remove', url, false, params);
+				},
+				'function': function (params) {
+					return core.ajax('callFunction', url, false, params);
 				}
 			};
 		},

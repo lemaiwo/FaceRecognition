@@ -24,7 +24,8 @@ sap.ui.define([
 			});
 		},
 		testCompareVectors: function (sNewVector) {
-			return this.odata("/getAllVectors").get({
+			return this.odata("/compareVectors").function({
+				method: "POST",
 				urlParameters: {
 					NewVector: sNewVector
 				}

@@ -33,6 +33,7 @@ import com.google.gson.Gson;
 import com.sap.cloud.sdk.service.prov.api.DataSourceHandler;
 import com.sap.cloud.sdk.service.prov.api.EntityData;
 import com.sap.cloud.sdk.service.prov.api.ExtensionHelper;
+import com.sap.cloud.sdk.service.prov.api.annotations.Action;
 import com.sap.cloud.sdk.service.prov.api.annotations.Function;
 import com.sap.cloud.sdk.service.prov.api.request.OperationRequest;
 import com.sap.cloud.sdk.service.prov.api.response.OperationResponse;
@@ -148,32 +149,61 @@ public class FaceCustomHandler {
 	// .response();
 	// return DeleteResponse.setError(errorResponse);
 	// }
-	@Function(Name = "getAllVectors", serviceName = "FaceRecognitionService")
+	@Action(Name = "compareVectors", serviceName = "FaceRecognitionService")
 	public OperationResponse getAllVectors(OperationRequest functionRequest, ExtensionHelper extensionHelper)
 			throws NamingException {
 		Map<String, Object> parameters = functionRequest.getParameters();
 		DataSourceHandler handler = extensionHelper.getHandler();
 
 		Map<String, Object> keys = new HashMap<String, Object>();
+		//convert to float
+		String[] aVector = String.valueOf(parameters.get("NewVector")).split(",");
 		keys.put("ID", "1");// String.valueOf(parameters.get("NewVector")));
 		String translationValue = "";
+		EntityManager em = (EntityManager) (new InitialContext()).lookup("java:comp/env/jpa/default/pc");
 		try {
-			LeonardoMlService mlService = LeonardoMlFoundation.create(CloudFoundryLeonardoMlServiceType.TRIAL_BETA,
-					LeonardoMlServiceType.TRANSLATION);
-					LeonardoMlServiceType.
 
-			// construct { units: [ input ],
-			// sourceLanguage: "en", targetLanguages: [ "de" ] }
-			List<Object> units = new ArrayList<>();
-			units.add(Collections.singletonMap("value", String.valueOf(parameters.get("NewVector"))));
+			LeonardoMlService mlService = LeonardoMlFoundation.create(CloudFoundryLeonardoMlServiceType.TRIAL_BETA,
+					LeonardoMlServiceType.SIMILARITY_SCORING);
+			// LeonardoMlServiceType.
+
+			// List<Faces>
+			List<Faces> faces = em.createQuery("SELECT c FROM Faces c ").getResultList();
+
+			List<Object> sercondVectors = new ArrayList<>();
+			Map<String, Object> face;
+			for (Faces f : faces) {
+				face = new HashMap<>();
+				face.put("id", f.getID());
+				face.put("vector", f.getVectors().substring(1, f.getVectors().length() - 1));// text.substring(0,
+																								// text.length() - 1);
+				sercondVectors.add(face);
+			}
+			Map<String, Object> first = new HashMap<>();
+			first.put("id", "0");
+			first.put("vector", aVector);
+			List<Object> firstVectors = new ArrayList<>();
+			firstVectors.add(first);
 
 			Map<String, Object> entity = new HashMap<>();
-			entity.put("units", units);
-			entity.put("sourceLanguage", "en");
-			entity.put("targetLanguages", Collections.singletonList("de"));
+			entity.put("0", Collections.singletonList(first));//firstVectors);
+			entity.put("1", sercondVectors);
+			String data = new Gson().toJson(entity);
+			logger.debug(data);
+			StringEntity json = new StringEntity(data, ContentType.APPLICATION_JSON);
+			// construct { units: [ input ],
+			// sourceLanguage: "en", targetLanguages: [ "de" ] }
+			// List<Object> units = new ArrayList<>();
+			// units.add(Collections.singletonMap("value",
+			// String.valueOf(parameters.get("NewVector"))));
+
+			// Map<String, Object> entity = new HashMap<>();
+			// entity.put("units", units);
+			// entity.put("sourceLanguage", "en");
+			// entity.put("targetLanguages", Collections.singletonList("de"));
 
 			HttpPost postRequest = new HttpPost();
-			postRequest.setEntity(new StringEntity(new Gson().toJson(entity), ContentType.APPLICATION_JSON));
+			postRequest.setEntity(json);
 
 			postRequest.setHeader("Accept", ContentType.APPLICATION_JSON.getMimeType());
 
@@ -187,12 +217,12 @@ public class FaceCustomHandler {
 						logger.debug(responseBody);
 
 						final Map<String, Object> responseObject = new Gson().fromJson(responseBody, Map.class);
-						final List<Object> respUnits = (List<Object>) responseObject.get("units");
+						final List<Object> respUnits = (List<Object>) responseObject.get("predictions");// .get("units");
 						final Map<String, Object> respUnit = (Map<String, Object>) respUnits.get(0);
 						final List<Map<String, Object>> translations = (List<Map<String, Object>>) respUnit
-								.get("translations");
+								.get("similarVectors");// .get("translations");
 						final Map<String, Object> translation = translations.get(0);
-						return (String) translation.get("value");
+						return (String) translation.get("id");// get("value");
 					} catch (Exception e) {
 						throw new RuntimeException("Failed to retrieve response: " + e.getMessage(), e);
 					}
@@ -207,8 +237,6 @@ public class FaceCustomHandler {
 					.setStatusCode(500).response();
 			return OperationResponse.setError(errorResponse);
 		}
-		EntityManager em = (EntityManager) (new InitialContext()).lookup("java:comp/env/jpa/default/pc");
-		List<Faces> faces = em.createQuery("SELECT c FROM Faces c ").getResultList();
 		Integer id = 1;
 		Faces f = em.find(Faces.class, id);
 		// List<Faces> faces =
@@ -227,15 +255,16 @@ public class FaceCustomHandler {
 		// OperationResponse response =
 		// OperationResponse.setSuccess().setPrimitiveData(Arrays.asList(status))
 		// .response();
-		List<EntityData> result = new ArrayList<EntityData>();
-		for (Faces f : faces) {
+		// List<EntityData> result = new ArrayList<EntityData>();
+		// for (Faces f : faces) {
 		EntityData entityd = EntityData.getBuilder().addElement("ID", f.getID())
 				.addElement("Firstname", f.getFirstname()).addElement("Lastname", f.getLastname())
 				.addElement("Vectors", translationValue// f.getVectors()
 				).buildEntityData("Face");
-		result.add(entity);
-		}
-		OperationResponse response = OperationResponse.setSuccess().setEntityData(result).response();//Arrays.asList(entityd)).response();
+		// result.add(entityd);
+		// }
+		// return OperationResponse.setSuccess().setData(faces).response();
+		OperationResponse response = OperationResponse.setSuccess().setEntityData(Arrays.asList(entityd)).response();
 		return response;
 		// } catch (DatasourceException e) {
 		// logger.error("Error accessing the data", e);

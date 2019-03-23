@@ -4,7 +4,7 @@
     <Schema Namespace="FaceRecognitionService" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
       <EntityContainer Name="EntityContainer" m:IsDefaultEntityContainer="true">
         <EntitySet Name="Face" EntityType="FaceRecognitionService.Face"/>
-        <FunctionImport Name="getAllVectors" EntitySet="Face" ReturnType="FaceRecognitionService.Face" m:HttpMethod="GET">
+        <FunctionImport Name="compareVectors" m:HttpMethod="POST">
           <Parameter Name="NewVector" Type="Edm.String" Mode="In"/>
         </FunctionImport>
       </EntityContainer>

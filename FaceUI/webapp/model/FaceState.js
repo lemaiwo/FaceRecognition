@@ -135,8 +135,11 @@ sap.ui.define([
 					vector: JSON.parse(response).predictions[0].faces[0].face_feature
 				});
 			}).then(function (oFace) {
-				// return FaceService.testCompareVectors();
-			}.bind(this));
+				
+				return FaceService.testCompareVectors(oFace.getVector().join(","));
+			}.bind(this)).then(function(result){
+				console.log(result);
+			});
 		},
 		compareFace: function (file) {
 			return this.getFaceFeatures(file).then(function (response) {

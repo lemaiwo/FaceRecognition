@@ -57,8 +57,8 @@
       },
       "@cds.persistence.name": "FACERECOGNITIONSERVICE_FACE"
     },
-    "FaceRecognitionService.getAllVectors": {
-      "kind": "function",
+    "FaceRecognitionService.compareVectors": {
+      "kind": "action",
       "params": {
         "NewVector": {
           "kind": "param",
@@ -66,9 +66,6 @@
           "type": "cds.String",
           "@cds.persistence.name": "NEWVECTOR"
         }
-      },
-      "returns": {
-        "type": "FaceRecognitionService.Face"
       }
     },
     "be.wl.ml.facerecognition.Faces": {
