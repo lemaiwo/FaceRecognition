@@ -163,14 +163,19 @@
 			<version>${project.parent.version}</version>
 		</dependency>
 		<!-- Dependency added for SAP Leonardo Machine Learning Foundation service access facilitation -->
-        <dependency>
-            <groupId>com.sap.cloud.s4hana.services</groupId>
-            <artifactId>scp-machine-learning</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>com.sap.cloud.s4hana.services</groupId>
+			<artifactId>scp-machine-learning</artifactId>
+		</dependency>
 		<!-- JPA -->
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>javax.persistence</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+			<version>4.3.1</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -14,11 +14,18 @@ import com.sap.cloud.sdk.services.scp.machinelearning.CloudFoundryLeonardoMlServ
 import com.sap.cloud.sdk.services.scp.machinelearning.LeonardoMlFoundation;
 import com.sap.cloud.sdk.services.scp.machinelearning.LeonardoMlService;
 import com.sap.cloud.sdk.services.scp.machinelearning.LeonardoMlServiceType;
+
+import org.apache.axiom.mime.MultipartWriter;
+import org.apache.axiom.mime.MultipartWriterFactory;
+import org.apache.axis2.builder.MultipartFormDataBuilder;
+import org.apache.commons.fileupload.MultipartStream;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.slf4j.Logger;
 
 // import javax.servlet.annotation.WebServlet;
@@ -35,6 +42,7 @@ import com.sap.cloud.sdk.service.prov.api.EntityData;
 import com.sap.cloud.sdk.service.prov.api.ExtensionHelper;
 import com.sap.cloud.sdk.service.prov.api.annotations.Action;
 import com.sap.cloud.sdk.service.prov.api.annotations.Function;
+import com.sap.cloud.sdk.service.prov.api.exception.DatasourceException;
 import com.sap.cloud.sdk.service.prov.api.request.OperationRequest;
 import com.sap.cloud.sdk.service.prov.api.response.OperationResponse;
 import com.sap.cloud.sdk.services.scp.machinelearning.CloudFoundryLeonardoMlServiceType;
@@ -149,65 +157,103 @@ public class FaceCustomHandler {
 	// .response();
 	// return DeleteResponse.setError(errorResponse);
 	// }
+	@Function(Name = "getVectorById", serviceName = "FaceRecognitionService")
+	public OperationResponse getVectorById(OperationRequest functionRequest, ExtensionHelper extensionHelper)throws NamingException {
+		Map<String, Object> parameters = functionRequest.getParameters();
+		DataSourceHandler handler = extensionHelper.getHandler();
+
+		List<String> properties = new ArrayList();
+		properties.add("Approved");
+
+		EntityData entityData = null;
+		try {
+			// List<String> lSelect = new ArrayList<String>();
+			// lSelect.add("ID");
+			// lSelect.add("Firstname");
+			// lSelect.add("Lastname");
+			// lSelect.add("Vectors");
+			// entityData = handler.executeRead("Faces", keys, lSelect);
+
+			EntityManager em = (EntityManager) (new InitialContext()).lookup("java:comp/env/jpa/default/pc");
+			Faces f = em.find(Faces.class, (Integer) parameters.get("id"));
+			EntityData entityd = EntityData.getBuilder().addElement("ID", f.getID())
+					.addElement("Firstname", f.getFirstname()).addElement("Lastname", f.getLastname())
+					.addElement("Vectors", f.getVectors()).buildEntityData("Face");
+			OperationResponse response = OperationResponse.setSuccess().setPrimitiveData(Arrays.asList(entityd))
+					.response();
+
+			return response;
+		} catch (Exception e) {
+			logger.error("Error accessing the data", e);
+			return null;
+		}
+	}
+
 	@Action(Name = "compareVectors", serviceName = "FaceRecognitionService")
 	public OperationResponse getAllVectors(OperationRequest functionRequest, ExtensionHelper extensionHelper)
 			throws NamingException {
 		Map<String, Object> parameters = functionRequest.getParameters();
 		DataSourceHandler handler = extensionHelper.getHandler();
 
-		Map<String, Object> keys = new HashMap<String, Object>();
-		//convert to float
+		// Map<String, Object> keys = new HashMap<String, Object>();
+		// convert to float
 		String[] aVector = String.valueOf(parameters.get("NewVector")).split(",");
-		keys.put("ID", "1");// String.valueOf(parameters.get("NewVector")));
-		String translationValue = "";
+
+		Float[] aVectorfloats = Arrays.stream(aVector).map(Float::valueOf).toArray(Float[]::new);
+		Map<String, Object> first = new HashMap<>();
+		first.put("id", 0);
+		first.put("vector", aVectorfloats);
+		List<Object> firstVectors = new ArrayList<>();
+		firstVectors.add(first);
+		// keys.put("ID", "1");// String.valueOf(parameters.get("NewVector")));
+		String matchValue = "";
 		EntityManager em = (EntityManager) (new InitialContext()).lookup("java:comp/env/jpa/default/pc");
+		// try {
+
+		LeonardoMlService mlService = LeonardoMlFoundation.create(CloudFoundryLeonardoMlServiceType.TRIAL_BETA,
+				LeonardoMlServiceType.SIMILARITY_SCORING);
+		// LeonardoMlServiceType.
+
+		// List<Faces>
+		List<Faces> faces = em.createQuery("SELECT c FROM Faces c ").getResultList();
+
+		List<Object> sercondVectors = new ArrayList<>();
+		Map<String, Object> face;
+		for (Faces f : faces) {
+			face = new HashMap<>();
+			face.put("id", f.getID());
+			aVector = String.valueOf(f.getVectors().substring(1, f.getVectors().length() - 1)).split(",");
+			aVectorfloats = Arrays.stream(aVector).map(Float::valueOf).toArray(Float[]::new);
+			face.put("vector", aVectorfloats);// text.substring(0,
+												// text.length() - 1);
+			sercondVectors.add(face);
+		}
+
+		Map<String, Object> entity = new HashMap<>();
+		entity.put("0", Collections.singletonList(first));// firstVectors);
+		entity.put("1", sercondVectors);
+		String data1 = new Gson().toJson(entity);
+		logger.error(data1);
+		StringEntity json1 = new StringEntity(data1, ContentType.APPLICATION_JSON);
+
+		entity = new HashMap<>();
+		entity.put("numSimilarVectors", 1);
+		String data2 = new Gson().toJson(entity);
+		// logger.error(data2);
+		StringEntity json2 = new StringEntity(data2, ContentType.APPLICATION_JSON);
+
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		builder.addTextBody("texts", data1, ContentType.APPLICATION_JSON);
+		builder.addTextBody("options", data2, ContentType.APPLICATION_JSON);
+		HttpEntity multipart = builder.build();
+
+		HttpPost postRequest = new HttpPost();
+		postRequest.setEntity(multipart);
+
+		// postRequest.setHeader("Accept", ContentType.APPLICATION_JSON.getMimeType());
+		postRequest.setHeader("Accept", ContentType.MULTIPART_FORM_DATA.getMimeType());
 		try {
-
-			LeonardoMlService mlService = LeonardoMlFoundation.create(CloudFoundryLeonardoMlServiceType.TRIAL_BETA,
-					LeonardoMlServiceType.SIMILARITY_SCORING);
-			// LeonardoMlServiceType.
-
-			// List<Faces>
-			List<Faces> faces = em.createQuery("SELECT c FROM Faces c ").getResultList();
-
-			List<Object> sercondVectors = new ArrayList<>();
-			Map<String, Object> face;
-			for (Faces f : faces) {
-				face = new HashMap<>();
-				face.put("id", f.getID());
-				face.put("vector", f.getVectors().substring(1, f.getVectors().length() - 1));// text.substring(0,
-																								// text.length() - 1);
-				sercondVectors.add(face);
-			}
-			Map<String, Object> first = new HashMap<>();
-			first.put("id", "0");
-			first.put("vector", aVector);
-			List<Object> firstVectors = new ArrayList<>();
-			firstVectors.add(first);
-
-			Map<String, Object> entity = new HashMap<>();
-			entity.put("0", Collections.singletonList(first));//firstVectors);
-			entity.put("1", sercondVectors);
-			String data = new Gson().toJson(entity);
-			logger.debug(data);
-			StringEntity json = new StringEntity(data, ContentType.APPLICATION_JSON);
-			// construct { units: [ input ],
-			// sourceLanguage: "en", targetLanguages: [ "de" ] }
-			// List<Object> units = new ArrayList<>();
-			// units.add(Collections.singletonMap("value",
-			// String.valueOf(parameters.get("NewVector"))));
-
-			// Map<String, Object> entity = new HashMap<>();
-			// entity.put("units", units);
-			// entity.put("sourceLanguage", "en");
-			// entity.put("targetLanguages", Collections.singletonList("de"));
-
-			HttpPost postRequest = new HttpPost();
-			postRequest.setEntity(json);
-
-			postRequest.setHeader("Accept", ContentType.APPLICATION_JSON.getMimeType());
-
-			translationValue = mlService.invoke(postRequest, new java.util.function.Function<HttpResponse, String>() {
+			matchValue = mlService.invoke(postRequest, new java.util.function.Function<HttpResponse, String>() {
 				@Override
 				public String apply(HttpResponse httpResponse) {
 					try {
@@ -222,7 +268,8 @@ public class FaceCustomHandler {
 						final List<Map<String, Object>> translations = (List<Map<String, Object>>) respUnit
 								.get("similarVectors");// .get("translations");
 						final Map<String, Object> translation = translations.get(0);
-						return (String) translation.get("id");// get("value");
+						final Double result = (Double) translation.get("id");
+						return (String) Integer.toString(result.intValue());// get("value");
 					} catch (Exception e) {
 						throw new RuntimeException("Failed to retrieve response: " + e.getMessage(), e);
 					}
@@ -237,38 +284,34 @@ public class FaceCustomHandler {
 					.setStatusCode(500).response();
 			return OperationResponse.setError(errorResponse);
 		}
-		Integer id = 1;
+		Integer id = Integer.parseInt(matchValue);
 		Faces f = em.find(Faces.class, id);
 		// List<Faces> faces =
 		// em.createNamedQuery("Faces.findAllUnordered").getResultList();
-		EntityData entityData = null;
-		// try {
-		// List<String> lSelect = new ArrayList<String>();
-		// lSelect.add("ID");
-		// lSelect.add("Firstname");
-		// lSelect.add("Lastname");
-		// lSelect.add("Vectors");
-		// entityData = handler.executeRead("Faces", keys, lSelect);
+		// EntityData entityData = null;
+		try {
 
-		// functionRequest.getEntityMetadata().getFlattenedElementNames());
-		// Boolean status = entityData.getElementValue("Vectors").toString().isEmpty();
-		// OperationResponse response =
-		// OperationResponse.setSuccess().setPrimitiveData(Arrays.asList(status))
-		// .response();
-		// List<EntityData> result = new ArrayList<EntityData>();
-		// for (Faces f : faces) {
-		EntityData entityd = EntityData.getBuilder().addElement("ID", f.getID())
-				.addElement("Firstname", f.getFirstname()).addElement("Lastname", f.getLastname())
-				.addElement("Vectors", translationValue// f.getVectors()
-				).buildEntityData("Face");
-		// result.add(entityd);
-		// }
-		// return OperationResponse.setSuccess().setData(faces).response();
-		OperationResponse response = OperationResponse.setSuccess().setEntityData(Arrays.asList(entityd)).response();
-		return response;
-		// } catch (DatasourceException e) {
-		// logger.error("Error accessing the data", e);
-		// return null;
-		// }
+			// functionRequest.getEntityMetadata().getFlattenedElementNames());
+			// Boolean status = entityData.getElementValue("Vectors").toString().isEmpty();
+			// OperationResponse response =
+			// OperationResponse.setSuccess().setPrimitiveData(Arrays.asList(status))
+			// .response();
+			// List<EntityData> result = new ArrayList<EntityData>();
+			// for (Faces f : faces) {
+
+			EntityData entityd = EntityData.getBuilder().addElement("ID", f.getID())
+					.addElement("Firstname", f.getFirstname()).addElement("Lastname", f.getLastname())
+					.addElement("Vectors", f.getVectors()).buildEntityData("Face");
+			// result.add(entityd);
+			// }
+			// return OperationResponse.setSuccess().setData(faces).response();
+			OperationResponse response = OperationResponse.setSuccess().setEntityData(Arrays.asList(entityd))
+					.response();
+
+			return response;
+		} catch (Exception e) {
+			logger.error("Error accessing the data", e);
+			return null;
+		}
 	}
 }
