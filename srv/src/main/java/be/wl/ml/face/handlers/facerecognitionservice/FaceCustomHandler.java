@@ -208,9 +208,14 @@ public class FaceCustomHandler {
 		Map<String, Object> parameters = functionRequest.getParameters();
 		DataSourceHandler handler = extensionHelper.getHandler();
 		String image = (String) parameters.get("Image");
+		byte[] decodedByte;
 		try {
-			byte[] decodedByte = Base64.getDecoder().decode(image);
-		} catch (Exception ex) {
+			decodedByte = Base64.getDecoder().decode(image);
+		} catch (Exception e) {
+			logger.error("Failure: " + e.getMessage(), e);
+			ErrorResponse errorResponse = ErrorResponse.getBuilder().setMessage("Error: " + e.getMessage())
+					.setStatusCode(500).response();
+			return OperationResponse.setError(errorResponse);
 
 		}
 		String FILEPATH = "";
