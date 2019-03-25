@@ -15,6 +15,7 @@ import com.sap.cloud.sdk.services.scp.machinelearning.LeonardoMlFoundation;
 import com.sap.cloud.sdk.services.scp.machinelearning.LeonardoMlService;
 import com.sap.cloud.sdk.services.scp.machinelearning.LeonardoMlServiceType;
 
+import org.apache.axiom.blob.Blob;
 import org.apache.axiom.mime.MultipartWriter;
 import org.apache.axiom.mime.MultipartWriterFactory;
 import org.apache.axis2.builder.MultipartFormDataBuilder;
@@ -22,17 +23,28 @@ import org.apache.commons.fileupload.MultipartStream;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.FormBodyPart;
+import org.apache.http.entity.mime.FormBodyPartBuilder;
+import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 
 // import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.rowset.serial.SerialBlob;
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.*;
 // import java.util.function.Function;
 
@@ -158,7 +170,8 @@ public class FaceCustomHandler {
 	// return DeleteResponse.setError(errorResponse);
 	// }
 	@Function(Name = "getVectorById", serviceName = "FaceRecognitionService")
-	public OperationResponse getVectorById(OperationRequest functionRequest, ExtensionHelper extensionHelper)throws NamingException {
+	public OperationResponse getVectorById(OperationRequest functionRequest, ExtensionHelper extensionHelper)
+			throws NamingException {
 		Map<String, Object> parameters = functionRequest.getParameters();
 		DataSourceHandler handler = extensionHelper.getHandler();
 
@@ -194,7 +207,72 @@ public class FaceCustomHandler {
 			throws NamingException {
 		Map<String, Object> parameters = functionRequest.getParameters();
 		DataSourceHandler handler = extensionHelper.getHandler();
+		String image = (String) parameters.get("Image");
+		try {
+			byte[] decodedByte = Base64.getDecoder().decode(image);
+		} catch (Exception ex) {
 
+		}
+		String FILEPATH = "";
+		File file = new File(FILEPATH);
+		// java.sql.Blob b = new SerialBlob(decodedByte);
+		try {
+			OutputStream os = new FileOutputStream(file);
+			os.write(decodedByte);
+			os.close();
+		} catch (Exception e) {
+			logger.error("Failure: " + e.getMessage(), e);
+			ErrorResponse errorResponse = ErrorResponse.getBuilder().setMessage("Error: " + e.getMessage())
+					.setStatusCode(500).response();
+			return OperationResponse.setError(errorResponse);
+		}
+		HttpPost post = new HttpPost();
+		MultipartEntityBuilder builderff = MultipartEntityBuilder.create();
+		builderff.addBinaryBody("files", file, ContentType.APPLICATION_OCTET_STREAM, "file.ext");
+		// FormBodyPart bodyPart = FormBodyPartBuilder.create().setName("any_name")
+		// .addField("Content-Disposition", "form-data; name=\"categoryFile\";
+		// filename=\"image.jpg\"")
+		// .setBody(new StringBody(b, ContentType.MULTIPART_FORM_DATA)).build();
+
+		// MultipartEntityBuilder builderff =
+		// MultipartEntityBuilder.create().setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
+		// .addPart(bodyPart);
+
+		HttpEntity entityf = builderff.build();
+		post.setEntity(entityf);
+		post.setHeader("Content-Type", "multipart/form-data");
+
+		LeonardoMlService mlFaceService = LeonardoMlFoundation.create(CloudFoundryLeonardoMlServiceType.TRIAL_BETA,
+				LeonardoMlServiceType.FACE_FEATURE_EXTRACTION);
+		try {
+			String facefeatures = mlFaceService.invoke(post, new java.util.function.Function<HttpResponse, String>() {
+				@Override
+				public String apply(HttpResponse httpResponse) {
+					try {
+						// retrieve entity content (requested json with Accept header, so should be
+						// text)
+						final String responseBody = HttpEntityUtil.getResponseBody(httpResponse);
+						logger.debug(responseBody);
+
+						final Map<String, Object> responseObject = new Gson().fromJson(responseBody, Map.class);
+						final List<Object> respUnits = (List<Object>) responseObject.get("predictions");// .get("units");
+						final Map<String, Object> respUnit = (Map<String, Object>) respUnits.get(0);
+						final List<Map<String, Object>> translations = (List<Map<String, Object>>) respUnit
+								.get("similarVectors");// .get("translations");
+						final Map<String, Object> translation = translations.get(0);
+						final Double result = (Double) translation.get("id");
+						return (String) Integer.toString(result.intValue());// get("value");
+					} catch (Exception e) {
+						throw new RuntimeException("Failed to retrieve response: " + e.getMessage(), e);
+					}
+				}
+			});
+		} catch (Exception e) {
+			logger.error("Failure: " + e.getMessage(), e);
+			ErrorResponse errorResponse = ErrorResponse.getBuilder().setMessage("Error: " + e.getMessage())
+					.setStatusCode(500).response();
+			return OperationResponse.setError(errorResponse);
+		}
 		// Map<String, Object> keys = new HashMap<String, Object>();
 		// convert to float
 		String[] aVector = String.valueOf(parameters.get("NewVector")).split(",");

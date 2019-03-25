@@ -131,12 +131,12 @@ sap.ui.define([
 					faceid: 0,
 					firstname: "test",
 					lastname: "test",
-					image: URL.createObjectURL(file.content),
+					image: file.uri,//URL.createObjectURL(file.content),
 					vector: JSON.parse(response).predictions[0].faces[0].face_feature
 				});
 			}).then(function (oFace) {
 				
-				return FaceService.testCompareVectors(oFace.getVector().join(","));
+				return FaceService.testCompareVectors(oFace.getVector().join(","),oFace.getImage());
 			}.bind(this)).then(function(result){
 				console.log(result);
 			});

@@ -35,6 +35,7 @@ sap.ui.define([
 			return ImageHandler.resize(file).then(function (image) {
 				return me._oFaceState.testCompareFace({
 					content: image.blob,
+					uri: image.uri,
 					name: file.name
 				});
 			}).then(function () {

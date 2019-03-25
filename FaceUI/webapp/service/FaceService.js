@@ -23,11 +23,12 @@ sap.ui.define([
 				}
 			});
 		},
-		testCompareVectors: function (sNewVector) {
+		testCompareVectors: function (sNewVector,sImage) {
 			return this.odata("/compareVectors").function({
 				method: "POST",
 				urlParameters: {
-					NewVector: sNewVector
+					NewVector: sNewVector,
+					Image:sImage
 				}
 			});
 		},

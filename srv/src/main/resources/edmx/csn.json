@@ -79,6 +79,12 @@
           "indexNo": 1,
           "type": "cds.String",
           "@cds.persistence.name": "NEWVECTOR"
+        },
+        "Image": {
+          "kind": "param",
+          "indexNo": 2,
+          "type": "cds.String",
+          "@cds.persistence.name": "IMAGE"
         }
       },
       "returns": {
