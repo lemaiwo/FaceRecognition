@@ -21,6 +21,7 @@ import org.apache.axiom.mime.MultipartWriterFactory;
 import org.apache.axis2.builder.MultipartFormDataBuilder;
 import org.apache.commons.fileupload.MultipartStream;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -31,6 +32,7 @@ import org.apache.http.entity.mime.FormBodyPart;
 import org.apache.http.entity.mime.FormBodyPartBuilder;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
@@ -41,10 +43,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.rowset.serial.SerialBlob;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 // import java.util.function.Function;
 
@@ -82,6 +88,8 @@ import com.sap.cloud.sdk.service.prov.api.response.ErrorResponse;
 //import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.imageio.ImageIO;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
@@ -209,8 +217,35 @@ public class FaceCustomHandler {
 		DataSourceHandler handler = extensionHelper.getHandler();
 		String image = (String) parameters.get("Image");
 		byte[] decodedByte;
+		String FILEPATH = "";
+		// File file = new File(FILEPATH);
+		String updatedFileName = UUID.randomUUID().toString() + ".jpg";
+		File file = new File(updatedFileName);
+		String boundary = "-------------" + System.currentTimeMillis();
+		HttpPost post = new HttpPost();
+		MultipartEntityBuilder builderff = MultipartEntityBuilder.create();
+		builderff.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+		builderff.setBoundary(boundary);
+		// builderff.setMimeSubtype("mixed");
+		// builderff.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 		try {
-			decodedByte = Base64.getDecoder().decode(image);
+			// decodedByte = Base64.getDecoder().decode(image);
+			String partSeparator = ",";
+			if (image.contains(partSeparator)) {
+				String encodedImg = image.split(partSeparator)[1];
+				decodedByte = Base64.getDecoder().decode(encodedImg.getBytes(StandardCharsets.UTF_8));
+				// builderff.addPart(FormBodyPartBuilder.create().setName("files")
+				// .setBody(new ByteArrayBody(decodedByte, "file.jpg")).build());
+				builderff.addBinaryBody("files", decodedByte, ContentType.create("image/jpeg"), "file.jpg");
+
+				// InputStream in = new ByteArrayInputStream(decodedByte);
+				// BufferedImage ImageFromConvert = ImageIO.read(in);
+				// ImageIO.write(ImageFromConvert, "jpeg", file);
+				// in.close();
+				// OutputStream os = new FileOutputStream(file);
+				// os.write(decodedByte);
+				// os.close();
+			}
 		} catch (Exception e) {
 			logger.error("Failure: " + e.getMessage(), e);
 			ErrorResponse errorResponse = ErrorResponse.getBuilder().setMessage("Error: " + e.getMessage())
@@ -218,22 +253,8 @@ public class FaceCustomHandler {
 			return OperationResponse.setError(errorResponse);
 
 		}
-		String FILEPATH = "";
-		File file = new File(FILEPATH);
 		// java.sql.Blob b = new SerialBlob(decodedByte);
-		try {
-			OutputStream os = new FileOutputStream(file);
-			os.write(decodedByte);
-			os.close();
-		} catch (Exception e) {
-			logger.error("Failure: " + e.getMessage(), e);
-			ErrorResponse errorResponse = ErrorResponse.getBuilder().setMessage("Error: " + e.getMessage())
-					.setStatusCode(500).response();
-			return OperationResponse.setError(errorResponse);
-		}
-		HttpPost post = new HttpPost();
-		MultipartEntityBuilder builderff = MultipartEntityBuilder.create();
-		builderff.addBinaryBody("files", file, ContentType.APPLICATION_OCTET_STREAM, "file.ext");
+
 		// FormBodyPart bodyPart = FormBodyPartBuilder.create().setName("any_name")
 		// .addField("Content-Disposition", "form-data; name=\"categoryFile\";
 		// filename=\"image.jpg\"")
@@ -242,15 +263,17 @@ public class FaceCustomHandler {
 		// MultipartEntityBuilder builderff =
 		// MultipartEntityBuilder.create().setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
 		// .addPart(bodyPart);
+		post.setHeader("Content-type", "multipart/form-data; boundary=" + boundary);
 
 		HttpEntity entityf = builderff.build();
 		post.setEntity(entityf);
-		post.setHeader("Content-Type", "multipart/form-data");
+		// post.setHeader("Content-Type", "multipart/form-data");
 
 		LeonardoMlService mlFaceService = LeonardoMlFoundation.create(CloudFoundryLeonardoMlServiceType.TRIAL_BETA,
 				LeonardoMlServiceType.FACE_FEATURE_EXTRACTION);
+				String facefeatures = "";
 		try {
-			String facefeatures = mlFaceService.invoke(post, new java.util.function.Function<HttpResponse, String>() {
+			facefeatures = mlFaceService.invoke(post, new java.util.function.Function<HttpResponse, String>() {
 				@Override
 				public String apply(HttpResponse httpResponse) {
 					try {
@@ -260,13 +283,13 @@ public class FaceCustomHandler {
 						logger.debug(responseBody);
 
 						final Map<String, Object> responseObject = new Gson().fromJson(responseBody, Map.class);
-						final List<Object> respUnits = (List<Object>) responseObject.get("predictions");// .get("units");
-						final Map<String, Object> respUnit = (Map<String, Object>) respUnits.get(0);
-						final List<Map<String, Object>> translations = (List<Map<String, Object>>) respUnit
-								.get("similarVectors");// .get("translations");
-						final Map<String, Object> translation = translations.get(0);
-						final Double result = (Double) translation.get("id");
-						return (String) Integer.toString(result.intValue());// get("value");
+						final List<Object> predictions = (List<Object>) responseObject.get("predictions");// .get("units");
+						final Map<String, Object> prediction = (Map<String, Object>) predictions.get(0);
+						final List<Map<String, Object>> faces = (List<Map<String, Object>>) prediction.get("faces");// .get("translations");
+						final Map<String, Object> face = faces.get(0);
+						final ArrayList<Float> feature = (ArrayList<Float>) face.get("face_feature");
+						return (String) feature.toString(); // String.join(",", feature);
+						// return (ArrayList<Float>) feature;// get("value");
 					} catch (Exception e) {
 						throw new RuntimeException("Failed to retrieve response: " + e.getMessage(), e);
 					}
@@ -280,8 +303,9 @@ public class FaceCustomHandler {
 		}
 		// Map<String, Object> keys = new HashMap<String, Object>();
 		// convert to float
-		String[] aVector = String.valueOf(parameters.get("NewVector")).split(",");
-
+		String newVector = facefeatures.substring(1, facefeatures.length() - 1);
+		// String[] aVector = String.valueOf(parameters.get("NewVector")).split(",");
+		String[] aVector = newVector.split(",");
 		Float[] aVectorfloats = Arrays.stream(aVector).map(Float::valueOf).toArray(Float[]::new);
 		Map<String, Object> first = new HashMap<>();
 		first.put("id", 0);
