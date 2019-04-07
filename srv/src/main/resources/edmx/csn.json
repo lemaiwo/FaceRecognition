@@ -91,6 +91,34 @@
         "type": "FaceRecognitionService.Face"
       }
     },
+    "FaceRecognitionService.findFaceByImage": {
+      "kind": "action",
+      "params": {
+        "Image": {
+          "kind": "param",
+          "indexNo": 1,
+          "type": "cds.String",
+          "@cds.persistence.name": "IMAGE"
+        }
+      },
+      "returns": {
+        "type": "FaceRecognitionService.Face"
+      }
+    },
+    "FaceRecognitionService.findFaceByVector": {
+      "kind": "action",
+      "params": {
+        "NewVector": {
+          "kind": "param",
+          "indexNo": 1,
+          "type": "cds.String",
+          "@cds.persistence.name": "NEWVECTOR"
+        }
+      },
+      "returns": {
+        "type": "FaceRecognitionService.Face"
+      }
+    },
     "be.wl.ml.facerecognition.Faces": {
       "kind": "entity",
       "elements": {

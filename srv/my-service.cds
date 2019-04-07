@@ -6,5 +6,7 @@ service FaceRecognitionService {
   function getVectorById(id:Integer) returns Face;
   
   action compareVectors(NewVector:String,Image:String) returns Face; //function for get - action for post
+  action findFaceByImage(Image:String) returns Face; 
+  action findFaceByVector(NewVector:String) returns Face; 
   
 }

@@ -271,7 +271,7 @@ public class FaceCustomHandler {
 
 		LeonardoMlService mlFaceService = LeonardoMlFoundation.create(CloudFoundryLeonardoMlServiceType.TRIAL_BETA,
 				LeonardoMlServiceType.FACE_FEATURE_EXTRACTION);
-				String facefeatures = "";
+		String facefeatures = "";
 		try {
 			facefeatures = mlFaceService.invoke(post, new java.util.function.Function<HttpResponse, String>() {
 				@Override
@@ -361,6 +361,7 @@ public class FaceCustomHandler {
 		postRequest.setHeader("Accept", ContentType.MULTIPART_FORM_DATA.getMimeType());
 		try {
 			matchValue = mlService.invoke(postRequest, new java.util.function.Function<HttpResponse, String>() {
+
 				@Override
 				public String apply(HttpResponse httpResponse) {
 					try {
@@ -419,6 +420,191 @@ public class FaceCustomHandler {
 		} catch (Exception e) {
 			logger.error("Error accessing the data", e);
 			return null;
+		}
+	}
+
+	private byte[] base64ToBytes(String image) {
+		String partSeparator = ",";
+		if (image.contains(partSeparator)) {
+			String encodedImg = image.split(partSeparator)[1];
+			return Base64.getDecoder().decode(encodedImg.getBytes(StandardCharsets.UTF_8));
+		}
+		return new byte[0];
+	}
+
+	private HttpPost getFilePost(String image) {
+		String boundary = "-------------" + System.currentTimeMillis();
+		MultipartEntityBuilder builderff = MultipartEntityBuilder.create();
+		builderff.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+		builderff.setBoundary(boundary);
+		builderff.addBinaryBody("files", this.base64ToBytes(image), ContentType.create("image/jpeg"), "file.jpg");
+		HttpPost post = new HttpPost();
+		post.setHeader("Content-type", "multipart/form-data; boundary=" + boundary);
+		HttpEntity entityf = builderff.build();
+		post.setEntity(entityf);
+		return post;
+	}
+
+	private HttpPost getSimilartyPost(String facefeatures) throws NamingException {
+		String[] aVector = facefeatures.split(",");
+		Float[] aVectorfloats = Arrays.stream(aVector).map(Float::valueOf).toArray(Float[]::new);
+		Map<String, Object> first = new HashMap<>();
+		first.put("id", 0);
+		first.put("vector", aVectorfloats);
+		List<Object> firstVectors = new ArrayList<>();
+		firstVectors.add(first);
+
+		Map<String, Object> entity = new HashMap<>();
+		entity.put("0", Collections.singletonList(first));// firstVectors);
+		entity.put("1", this.getFaces());
+		String data1 = new Gson().toJson(entity);
+		logger.error(data1);
+		StringEntity json1 = new StringEntity(data1, ContentType.APPLICATION_JSON);
+
+		entity = new HashMap<>();
+		entity.put("numSimilarVectors", 1);
+		String data2 = new Gson().toJson(entity);
+		// logger.error(data2);
+		StringEntity json2 = new StringEntity(data2, ContentType.APPLICATION_JSON);
+
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		builder.addTextBody("texts", data1, ContentType.APPLICATION_JSON);
+		builder.addTextBody("options", data2, ContentType.APPLICATION_JSON);
+		HttpEntity multipart = builder.build();
+
+		HttpPost postRequest = new HttpPost();
+		postRequest.setEntity(multipart);
+
+		// postRequest.setHeader("Accept", ContentType.APPLICATION_JSON.getMimeType());
+		postRequest.setHeader("Accept", ContentType.MULTIPART_FORM_DATA.getMimeType());
+		return postRequest;
+	}
+
+	private List<Object> getFaces() throws NamingException {
+		EntityManager em = (EntityManager) (new InitialContext()).lookup("java:comp/env/jpa/default/pc");
+		// List<Faces>
+		List<Faces> faces = em.createQuery("SELECT c FROM Faces c ").getResultList();
+
+		List<Object> sercondVectors = new ArrayList<>();
+		Map<String, Object> face;
+		Float[] aVectorfloats;
+		String[] aVector;
+		for (Faces f : faces) {
+			face = new HashMap<>();
+			face.put("id", f.getID());
+			aVector = String.valueOf(f.getVectors().substring(1, f.getVectors().length() - 1)).split(",");
+			aVectorfloats = Arrays.stream(aVector).map(Float::valueOf).toArray(Float[]::new);
+			face.put("vector", aVectorfloats);// text.substring(0,
+												// text.length() - 1);
+			sercondVectors.add(face);
+		}
+		return sercondVectors;
+	}
+
+	private String getFaceVector(String image) throws NamingException {
+		String facefeatures = "";
+		LeonardoMlService mlFaceService = LeonardoMlFoundation.create(CloudFoundryLeonardoMlServiceType.TRIAL_BETA,
+				LeonardoMlServiceType.FACE_FEATURE_EXTRACTION);
+		return mlFaceService.invoke(this.getFilePost(image), new java.util.function.Function<HttpResponse, String>() {
+			@Override
+			public String apply(HttpResponse httpResponse) {
+				try {
+					final String responseBody = HttpEntityUtil.getResponseBody(httpResponse);
+					final Map<String, Object> responseObject = new Gson().fromJson(responseBody, Map.class);
+					final List<Object> predictions = (List<Object>) responseObject.get("predictions");// .get("units");
+					final Map<String, Object> prediction = (Map<String, Object>) predictions.get(0);
+					final List<Map<String, Object>> faces = (List<Map<String, Object>>) prediction.get("faces");// .get("translations");
+					final Map<String, Object> face = faces.get(0);
+					final ArrayList<Float> feature = (ArrayList<Float>) face.get("face_feature");
+					return (String) feature.toString();
+				} catch (Exception e) {
+					throw new RuntimeException("Failed to retrieve response: " + e.getMessage(), e);
+				}
+			}
+		});
+	}
+
+	private String findFaceVector(String facefeatures) throws NamingException {
+		String matchValue = "";
+
+		LeonardoMlService mlService = LeonardoMlFoundation.create(CloudFoundryLeonardoMlServiceType.TRIAL_BETA,
+				LeonardoMlServiceType.SIMILARITY_SCORING);
+		return mlService.invoke(this.getSimilartyPost(facefeatures),
+				new java.util.function.Function<HttpResponse, String>() {
+					@Override
+					public String apply(HttpResponse httpResponse) {
+						try {
+							final String responseBody = HttpEntityUtil.getResponseBody(httpResponse);
+							final Map<String, Object> responseObject = new Gson().fromJson(responseBody, Map.class);
+							final List<Object> respUnits = (List<Object>) responseObject.get("predictions");// .get("units");
+							final Map<String, Object> respUnit = (Map<String, Object>) respUnits.get(0);
+							final List<Map<String, Object>> translations = (List<Map<String, Object>>) respUnit
+									.get("similarVectors");// .get("translations");
+							final Map<String, Object> translation = translations.get(0);
+							final Double result = (Double) translation.get("id");
+							return (String) Integer.toString(result.intValue());
+						} catch (Exception e) {
+							throw new RuntimeException("Failed to retrieve response: " + e.getMessage(), e);
+						}
+					}
+				});
+	}
+
+	@Action(Name = "findFaceByImage", serviceName = "FaceRecognitionService")
+	public OperationResponse findFaceByImage(OperationRequest functionRequest, ExtensionHelper extensionHelper)
+			throws NamingException {
+		Map<String, Object> parameters = functionRequest.getParameters();
+		DataSourceHandler handler = extensionHelper.getHandler();
+		String image = (String) parameters.get("Image");
+
+		try {
+			String facefeatures = this.getFaceVector(image);
+			String matchValue = this.findFaceVector(facefeatures.substring(1, facefeatures.length() - 1));
+
+			Integer id = Integer.parseInt(matchValue);
+			EntityManager em = (EntityManager) (new InitialContext()).lookup("java:comp/env/jpa/default/pc");
+			Faces f = em.find(Faces.class, id);
+
+			EntityData entityd = EntityData.getBuilder().addElement("ID", f.getID())
+					.addElement("Firstname", f.getFirstname()).addElement("Lastname", f.getLastname())
+					.addElement("Vectors", f.getVectors()).buildEntityData("Face");
+			OperationResponse response = OperationResponse.setSuccess().setEntityData(Arrays.asList(entityd))
+					.response();
+
+			return response;
+		} catch (Exception e) {
+			logger.error("Failure: " + e.getMessage(), e);
+			ErrorResponse errorResponse = ErrorResponse.getBuilder().setMessage("Error: " + e.getMessage())
+					.setStatusCode(500).response();
+			return OperationResponse.setError(errorResponse);
+		}
+	}
+
+	@Action(Name = "findFaceByVector", serviceName = "FaceRecognitionService")
+	public OperationResponse findFaceByVector(OperationRequest functionRequest, ExtensionHelper extensionHelper)
+			throws NamingException {
+		Map<String, Object> parameters = functionRequest.getParameters();
+		DataSourceHandler handler = extensionHelper.getHandler();
+		try {
+			String aVector = String.valueOf(parameters.get("NewVector"));
+			String matchValue = this.findFaceVector(aVector);
+
+			Integer id = Integer.parseInt(matchValue);
+			EntityManager em = (EntityManager) (new InitialContext()).lookup("java:comp/env/jpa/default/pc");
+			Faces f = em.find(Faces.class, id);
+
+			EntityData entityd = EntityData.getBuilder().addElement("ID", f.getID())
+					.addElement("Firstname", f.getFirstname()).addElement("Lastname", f.getLastname())
+					.addElement("Vectors", f.getVectors()).buildEntityData("Face");
+			OperationResponse response = OperationResponse.setSuccess().setEntityData(Arrays.asList(entityd))
+					.response();
+
+			return response;
+		} catch (Exception e) {
+			logger.error("Failure: " + e.getMessage(), e);
+			ErrorResponse errorResponse = ErrorResponse.getBuilder().setMessage("Error: " + e.getMessage())
+					.setStatusCode(500).response();
+			return OperationResponse.setError(errorResponse);
 		}
 	}
 }

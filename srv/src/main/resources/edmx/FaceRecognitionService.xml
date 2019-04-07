@@ -11,6 +11,12 @@
           <Parameter Name="NewVector" Type="Edm.String" Mode="In"/>
           <Parameter Name="Image" Type="Edm.String" Mode="In"/>
         </FunctionImport>
+        <FunctionImport Name="findFaceByImage" EntitySet="Face" ReturnType="FaceRecognitionService.Face" m:HttpMethod="POST">
+          <Parameter Name="Image" Type="Edm.String" Mode="In"/>
+        </FunctionImport>
+        <FunctionImport Name="findFaceByVector" EntitySet="Face" ReturnType="FaceRecognitionService.Face" m:HttpMethod="POST">
+          <Parameter Name="NewVector" Type="Edm.String" Mode="In"/>
+        </FunctionImport>
       </EntityContainer>
       <EntityType Name="Face">
         <Key>
