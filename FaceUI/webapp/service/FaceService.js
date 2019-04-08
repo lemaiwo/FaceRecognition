@@ -24,10 +24,10 @@ sap.ui.define([
 			});
 		},
 		testCompareVectors: function (sNewVector,sImage) {
-			return this.odata("/compareVectors").function({
+			return this.odata("/findFaceByImage").function({
 				method: "POST",
 				urlParameters: {
-					NewVector: sNewVector,
+					// NewVector: sNewVector,
 					Image:sImage
 				}
 			});

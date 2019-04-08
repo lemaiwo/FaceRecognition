@@ -556,10 +556,10 @@ public class FaceCustomHandler {
 		Map<String, Object> parameters = functionRequest.getParameters();
 		DataSourceHandler handler = extensionHelper.getHandler();
 		String image = (String) parameters.get("Image");
-
+FaceHandlerHelper faceHelper = new FaceHandlerHelper();
 		try {
-			String facefeatures = this.getFaceVector(image);
-			String matchValue = this.findFaceVector(facefeatures.substring(1, facefeatures.length() - 1));
+			String facefeatures = faceHelper.getFaceVector(image);
+			String matchValue = faceHelper.findFaceVector(facefeatures.substring(1, facefeatures.length() - 1));
 
 			Integer id = Integer.parseInt(matchValue);
 			EntityManager em = (EntityManager) (new InitialContext()).lookup("java:comp/env/jpa/default/pc");
@@ -585,9 +585,10 @@ public class FaceCustomHandler {
 			throws NamingException {
 		Map<String, Object> parameters = functionRequest.getParameters();
 		DataSourceHandler handler = extensionHelper.getHandler();
+		FaceHandlerHelper faceHelper = new FaceHandlerHelper();
 		try {
 			String aVector = String.valueOf(parameters.get("NewVector"));
-			String matchValue = this.findFaceVector(aVector);
+			String matchValue = faceHelper.findFaceVector(aVector);
 
 			Integer id = Integer.parseInt(matchValue);
 			EntityManager em = (EntityManager) (new InitialContext()).lookup("java:comp/env/jpa/default/pc");

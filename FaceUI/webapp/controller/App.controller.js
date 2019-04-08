@@ -39,9 +39,9 @@ sap.ui.define([
 					name: file.name
 				});
 			}).then(function () {
-				// return this.openFragment("be.wl.ml.FaceUI.view.dialog.Person", this._oFaceState.getModel(), true, false, {
-				// 	editable: false
-				// });
+				return this.openFragment("be.wl.ml.FaceUI.view.dialog.Person", this._oFaceState.getModel(), true, false, {
+					editable: false
+				});
 			}.bind(this));
 		},
 		checkPhoto: function (oEvent) {
