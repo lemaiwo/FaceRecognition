@@ -10,8 +10,8 @@
 						<ToolbarSpacer/>
 						<Title text="Face Recognition"/>
 						<ToolbarSpacer/>
-						<u:FileUploader name="myFileUploadcheck" buttonOnly="true" buttonText="Test" icon="sap-icon://add-photo" iconOnly="false"
-							tooltip="Upload your file to the local server" sameFilenameAllowed="true" change=".testCheckPhoto"/>
+						<!--<u:FileUploader name="myFileUploadcheck" buttonOnly="true" buttonText="Test" icon="sap-icon://add-photo" iconOnly="false"-->
+						<!--	tooltip="Upload your file to the local server" sameFilenameAllowed="true" change=".testCheckPhoto"/>-->
 						<u:FileUploader name="myFileUploadcheck" buttonOnly="true" icon="sap-icon://add-photo" iconOnly="true"
 							tooltip="Upload your file to the local server" sameFilenameAllowed="true" change=".checkPhoto"/>
 					</Toolbar>

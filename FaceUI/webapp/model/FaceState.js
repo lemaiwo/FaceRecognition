@@ -125,46 +125,42 @@ sap.ui.define([
 			// 			});
 			// 	}.bind(this));
 		},
-		testCompareFace: function (file) {
-			return this.getFaceFeatures(file).then(function (response) {
-				return new Face({
-					faceid: 0,
-					firstname: "test",
-					lastname: "test",
-					image: file.uri,//URL.createObjectURL(file.content),
-					vector: JSON.parse(response).predictions[0].faces[0].face_feature
-				});
-			}).then(function (oFace) {
-				
-				return FaceService.testCompareVectors(oFace.getVector().join(","),oFace.getImage());
-			}.bind(this)).then(function(result){
-				console.log(result);
-			});
-		},
 		compareFace: function (file) {
-			return this.getFaceFeatures(file).then(function (response) {
-				return new Face({
-					faceid: 0,
-					firstname: "test",
-					lastname: "test",
-					image: URL.createObjectURL(file.content),
-					vector: JSON.parse(response).predictions[0].faces[0].face_feature
-				});
-			}).then(function (oFace) {
-				return FaceService.compareFaces(this.tokenInfo.access_token, this.getAllFacesAsVectors(oFace));
-			}.bind(this)).then(function (result) {
-				result = JSON.parse(result);
-				return this.getFaces().filter(function (oFace) {
-					return oFace.getFaceid() === result.predictions[0].similarVectors[0].id;
-				})[0];
-				//return result.predictions[0].similarVectors[0].id;
-			}.bind(this)).catch(function (error) {
-				return false;
-			}).then(function (oFoundFace) {
-				this.setFoundFace(oFoundFace);
-				return oFoundFace;
+			return FaceService.compareVectors(file.uri).then(function(result){
+				this.setFoundFace(new Face({
+						faceid: result.data.ID,
+						firstname: result.data.Firstname,
+						lastname: result.data.Lastname,
+						vector: JSON.parse(result.data.Vectors),
+						imageuri: result.data.Image
+				}));
+				return this.getFoundFace();
 			}.bind(this));
 		},
+		// compareFace: function (file) {
+		// 	return this.getFaceFeatures(file).then(function (response) {
+		// 		return new Face({
+		// 			faceid: 0,
+		// 			firstname: "test",
+		// 			lastname: "test",
+		// 			image: URL.createObjectURL(file.content),
+		// 			vector: JSON.parse(response).predictions[0].faces[0].face_feature
+		// 		});
+		// 	}).then(function (oFace) {
+		// 		return FaceService.compareFaces(this.tokenInfo.access_token, this.getAllFacesAsVectors(oFace));
+		// 	}.bind(this)).then(function (result) {
+		// 		result = JSON.parse(result);
+		// 		return this.getFaces().filter(function (oFace) {
+		// 			return oFace.getFaceid() === result.predictions[0].similarVectors[0].id;
+		// 		})[0];
+		// 		//return result.predictions[0].similarVectors[0].id;
+		// 	}.bind(this)).catch(function (error) {
+		// 		return false;
+		// 	}).then(function (oFoundFace) {
+		// 		this.setFoundFace(oFoundFace);
+		// 		return oFoundFace;
+		// 	}.bind(this));
+		// },
 		getFaceFeatures: function (file, bAdd) {
 			var me = this;
 			BusyIndicator.show(0);
@@ -183,19 +179,20 @@ sap.ui.define([
 				BusyIndicator.hide();
 				return response;
 			}.bind(this));
-		},
-		getAllFacesAsVectors: function (oFace) {
-			//{"0": [{"id": "v0", "vector": [0.22, …, 0.93]}, {"id": "v1", "vector": [0.39, …, 0.69]}]}
-			var aSearchFace = [];
-			aSearchFace.push(oFace.getVectorObject());
-			return {
-				"0": aSearchFace,
-				"1": this.getFaces().filter(function (oFace) {
-					return oFace.hasVectors();
-				}).map(function (oFace) {
-					return oFace.getVectorObject();
-				})
-			};
 		}
+		// ,
+		// getAllFacesAsVectors: function (oFace) {
+		// 	//{"0": [{"id": "v0", "vector": [0.22, …, 0.93]}, {"id": "v1", "vector": [0.39, …, 0.69]}]}
+		// 	var aSearchFace = [];
+		// 	aSearchFace.push(oFace.getVectorObject());
+		// 	return {
+		// 		"0": aSearchFace,
+		// 		"1": this.getFaces().filter(function (oFace) {
+		// 			return oFace.hasVectors();
+		// 		}).map(function (oFace) {
+		// 			return oFace.getVectorObject();
+		// 		})
+		// 	};
+		// }
 	});
 });

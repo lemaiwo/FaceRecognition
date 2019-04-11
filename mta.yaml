@@ -12,6 +12,12 @@ modules:
       memory: 256M
     requires:
       - name: rt_FaceRecognition_appRouter
+      - name: srv_api
+        group: destinations
+        properties:
+          forwardAuthToken: true
+          name: srv_api
+          url: '~{url}'
       - name: uaa_FaceRecognition
   - name: FaceRecognition_ui_deployer
     type: com.sap.html5.application-content
@@ -48,16 +54,25 @@ modules:
         properties:
           JBP_CONFIG_RESOURCE_CONFIGURATION: '[tomee/webapps/ROOT/WEB-INF/resources.xml:{"service_name_for_DefaultDB" : "~{hdi-container-name}"}]'
     properties:
-       TARGET_RUNTIME: tomee
-       buildpack: sap_java_buildpack
-       ALLOW_MOCKED_AUTH_HEADER: true
-       JAVA_OPTS: '-XX:MaxMetaspaceSize=256M'
-       JBP_CONFIG_SAPJVM_MEMORY_SIZES: 'metaspace:256m..'
+      TARGET_RUNTIME: tomee
+      buildpack: sap_java_buildpack
+      ALLOW_MOCKED_AUTH_HEADER: true
+      JAVA_OPTS: '-XX:MaxMetaspaceSize=256M'
+      JBP_CONFIG_SAPJVM_MEMORY_SIZES: 'metaspace:256m..'
   - name: FaceUI
     type: html5
     path: FaceUI
     build-parameters:
       builder: grunt
+    requires:
+      - name: srv_api
+        group: destinations
+        properties:
+          forwardAuthToken: true
+          strictSSL: false
+          name: srv_api
+          url: '~{url}'
+  
 resources:
   - name: rt_FaceRecognition_appRouter
     parameters:

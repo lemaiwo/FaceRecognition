@@ -3,7 +3,7 @@
 		<customHeader>
 			<Toolbar>
 				<ToolbarSpacer/>
-				<Label text="New person"/>
+				<Label text="{= !!${/newFace}?'New p':'P' }erson {= !!${/foundFace}?'found':''}"/>
 				<ToolbarSpacer/>
 				<Button icon="sap-icon://decline" press=".onClose"/>
 			</Toolbar>
@@ -30,7 +30,8 @@
 						<Text text="{/foundFace/lastname}"/>
 					</f:content>
 				</f:SimpleForm>
-				<Image src="{/newFace/imageString}" densityAware="false" width="350px"></Image>
+				<Image visible="{= !!${/newFace}}" src="{/newFace/imageString}" densityAware="false" width="350px"></Image>
+				<Image visible="{= !!${/foundFace}}" src="{/foundFace/imageuri}" densityAware="false" width="350px"></Image>
 			</VBox>
 		</content>
 		<buttons>

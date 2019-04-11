@@ -57,40 +57,6 @@
       },
       "@cds.persistence.name": "FACERECOGNITIONSERVICE_FACE"
     },
-    "FaceRecognitionService.getVectorById": {
-      "kind": "function",
-      "params": {
-        "id": {
-          "kind": "param",
-          "indexNo": 1,
-          "type": "cds.Integer",
-          "@cds.persistence.name": "ID"
-        }
-      },
-      "returns": {
-        "type": "FaceRecognitionService.Face"
-      }
-    },
-    "FaceRecognitionService.compareVectors": {
-      "kind": "action",
-      "params": {
-        "NewVector": {
-          "kind": "param",
-          "indexNo": 1,
-          "type": "cds.String",
-          "@cds.persistence.name": "NEWVECTOR"
-        },
-        "Image": {
-          "kind": "param",
-          "indexNo": 2,
-          "type": "cds.String",
-          "@cds.persistence.name": "IMAGE"
-        }
-      },
-      "returns": {
-        "type": "FaceRecognitionService.Face"
-      }
-    },
     "FaceRecognitionService.findFaceByImage": {
       "kind": "action",
       "params": {

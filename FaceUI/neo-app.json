@@ -47,7 +47,7 @@
       "description": "classifier"
     },
     {
-      "path": "/FaceRecognitionCF",
+      "path": "/FaceRecognitionService",
       "target": {
         "type": "destination",
         "name": "FaceRecognitionCF"

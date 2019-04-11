@@ -14,8 +14,8 @@
 			"version": "0.0.0"
 		},
 		"dataSources": {
-			"FaceRecognitionCF": {
-				"uri": "/FaceRecognitionCF/",
+			"FaceRecognitionService": {
+				"uri": "/odata/v2/FaceRecognitionService/",
 				"type": "OData",
 				"settings": {
 					"odataVersion": "2.0",
@@ -73,14 +73,14 @@
 				}
 			},
 			"": {
-				"uri": "/FaceRecognitionCF/",
+				"uri": "/odata/v2/FaceRecognitionService/",
 				"type": "sap.ui.model.odata.v2.ODataModel",
 				"settings": {
 					"defaultOperationMode": "Server",
 					"defaultBindingMode": "OneWay",
 					"defaultCountMode": "Request"
 				},
-				"dataSource": "FaceRecognitionCF",
+				"dataSource": "FaceRecognitionService",
 				"preload": true
 			}
 		},

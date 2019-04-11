@@ -23,11 +23,10 @@ sap.ui.define([
 				}
 			});
 		},
-		testCompareVectors: function (sNewVector,sImage) {
+		compareVectors: function (sImage) {
 			return this.odata("/findFaceByImage").function({
 				method: "POST",
 				urlParameters: {
-					// NewVector: sNewVector,
 					Image:sImage
 				}
 			});
@@ -73,31 +72,31 @@ sap.ui.define([
 				return error;
 			});
 		},
-		compareFaces: function (token, oVectors) {
-			var headers = {
-				"authorization": "Bearer " + token //,
-					// "Content-Type": "multipart/form-data",
-					// "accept": "application/json"
-			};
-			var body = {
-				"texts": JSON.stringify(oVectors),
-				"option": JSON.stringify({
-					"numSimilarVectors": 2
-				})
-			};
-			var formData = new FormData();
+		// compareFaces: function (token, oVectors) {
+		// 	var headers = {
+		// 		"authorization": "Bearer " + token //,
+		// 			// "Content-Type": "multipart/form-data",
+		// 			// "accept": "application/json"
+		// 	};
+		// 	var body = {
+		// 		"texts": JSON.stringify(oVectors),
+		// 		"option": JSON.stringify({
+		// 			"numSimilarVectors": 2
+		// 		})
+		// 	};
+		// 	var formData = new FormData();
 
-			formData.append("texts", JSON.stringify(oVectors));
-			formData.append("options", JSON.stringify({
-				"numSimilarVectors": 1
-			}));
-			if (formData.fd) {
-				formData = formData.fd;
-			}
-			return this.http("/api/v2/similarity-scoring/").post(headers, formData).catch(function (error) {
-				return error;
-			});
-		}
+		// 	formData.append("texts", JSON.stringify(oVectors));
+		// 	formData.append("options", JSON.stringify({
+		// 		"numSimilarVectors": 1
+		// 	}));
+		// 	if (formData.fd) {
+		// 		formData = formData.fd;
+		// 	}
+		// 	return this.http("/api/v2/similarity-scoring/").post(headers, formData).catch(function (error) {
+		// 		return error;
+		// 	});
+		// }
 	});
 	return new FaceService();
 });

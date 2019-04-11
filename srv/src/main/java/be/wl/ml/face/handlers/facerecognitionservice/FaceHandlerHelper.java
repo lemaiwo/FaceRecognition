@@ -79,6 +79,7 @@ import org.apache.http.entity.StringEntity;
 
 public class FaceHandlerHelper {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
 	public FaceHandlerHelper() {
 		// this.logger = logger;
 	}
@@ -93,11 +94,13 @@ public class FaceHandlerHelper {
 	}
 
 	private HttpPost getFilePost(String image) {
+		String mimetype = image.substring(image.indexOf(":") + 1, image.indexOf(";"));
+		String extension = MimeTypesExtensions.getExtensionFromMimeType(mimetype);
 		String boundary = "-------------" + System.currentTimeMillis();
 		MultipartEntityBuilder builderff = MultipartEntityBuilder.create();
 		builderff.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 		builderff.setBoundary(boundary);
-		builderff.addBinaryBody("files", this.base64ToBytes(image), ContentType.create("image/jpeg"), "file.jpg");
+		builderff.addBinaryBody("files", this.base64ToBytes(image), ContentType.create(mimetype), "file."+extension);
 		HttpPost post = new HttpPost();
 		post.setHeader("Content-type", "multipart/form-data; boundary=" + boundary);
 		HttpEntity entityf = builderff.build();
@@ -165,6 +168,7 @@ public class FaceHandlerHelper {
 		String facefeatures = "";
 		LeonardoMlService mlFaceService = LeonardoMlFoundation.create(CloudFoundryLeonardoMlServiceType.TRIAL_BETA,
 				LeonardoMlServiceType.FACE_FEATURE_EXTRACTION);
+
 		return mlFaceService.invoke(this.getFilePost(image), new java.util.function.Function<HttpResponse, String>() {
 			@Override
 			public String apply(HttpResponse httpResponse) {
