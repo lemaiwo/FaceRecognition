@@ -15,7 +15,7 @@
 		},
 		"dataSources": {
 			"FaceRecognitionService": {
-				"uri": "/odata/v2/FaceRecognitionService/",
+				"uri": "odata/v2/FaceRecognitionService/",
 				"type": "OData",
 				"settings": {
 					"odataVersion": "2.0",
@@ -73,7 +73,7 @@
 				}
 			},
 			"": {
-				"uri": "/odata/v2/FaceRecognitionService/",
+				"uri": "odata/v2/FaceRecognitionService/",
 				"type": "sap.ui.model.odata.v2.ODataModel",
 				"settings": {
 					"defaultOperationMode": "Server",

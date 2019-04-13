@@ -36,7 +36,7 @@ sap.ui.define([
 			this.setImageuri(this.getGeneratedImageuri());
 		},
 		getGeneratedImageuri:function(){
-			return "/cmis/0d1793f590788bc65bc9b3c5/root/"+this.getImagename(); 
+			return "cmisproxysap/cmis/json/0d1793f590788bc65bc9b3c5/root/"+this.getImagename(); 
 		},
 		getImagename:function(){
 			if(this.getOriginName()){

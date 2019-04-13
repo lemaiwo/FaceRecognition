@@ -16,7 +16,7 @@ sap.ui.define([
 			if (form.fd) {
 				form = form.fd;
 			}
-			return this.http("/cmis/0d1793f590788bc65bc9b3c5/root").post(false,form);
+			return this.http("cmisproxysap/cmis/json/0d1793f590788bc65bc9b3c5/root").post(false,form);
 		},
 		deleteFile: function ( name) {
 			var form = new FormData();
@@ -28,7 +28,7 @@ sap.ui.define([
 			if (form.fd) {
 				form = form.fd;
 			}
-			return this.http("/cmis/0d1793f590788bc65bc9b3c5/root/"+name).post(false,form);
+			return this.http("cmisproxysap/cmis/json/0d1793f590788bc65bc9b3c5/root/"+name).post(false,form);
 		}
 	});
 	return new RepoService();

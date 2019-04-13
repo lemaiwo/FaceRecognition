@@ -47,17 +47,19 @@
       "description": "classifier"
     },
     {
-      "path": "/FaceRecognitionService",
+      "path": "/odata/v2/FaceRecognitionService/",
       "target": {
         "type": "destination",
-        "name": "FaceRecognitionCF"
+        "name": "FaceRecognitionCF",
+        "entryPath": "/odata/v2/FaceRecognitionService/"
       },
       "description": "Face Recognition"
     },{
-      "path": "/cmis",
+      "path": "/cmisproxysap/cmis/json",
       "target": {
         "type": "destination",
-        "name": "documentservicewl"
+        "name": "documentservicewl",
+        "entryPath": "/cmisproxysap/cmis/json"
       },
       "description": "CMIS Connection Document Service"
     }

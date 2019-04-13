@@ -126,13 +126,13 @@ sap.ui.define([
 			// 	}.bind(this));
 		},
 		compareFace: function (file) {
-			return FaceService.compareVectors(file.uri).then(function(result){
+			return FaceService.compareVectors(file.uri).then(function (result) {
 				this.setFoundFace(new Face({
-						faceid: result.data.ID,
-						firstname: result.data.Firstname,
-						lastname: result.data.Lastname,
-						vector: JSON.parse(result.data.Vectors),
-						imageuri: result.data.Image
+					faceid: result.data.ID,
+					firstname: result.data.Firstname,
+					lastname: result.data.Lastname,
+					vector: JSON.parse(result.data.Vectors),
+					imageuri: result.data.Image
 				}));
 				return this.getFoundFace();
 			}.bind(this));
@@ -162,37 +162,37 @@ sap.ui.define([
 		// 	}.bind(this));
 		// },
 		getFaceFeatures: function (file, bAdd) {
-			var me = this;
-			BusyIndicator.show(0);
-			return FaceService.getBearerToken().then(function (token) {
-				me.tokenInfo = JSON.parse(token);
-				var form = new FormData();
-				form.append("files", file.content, file.name);
-				if (form.fd) {
-					form = form.fd;
-				}
-				return FaceService.getFaceFeatures(me.tokenInfo.access_token, form);
-			}).catch(function (error) {
-				jQuery.sap.log.error(error);
-				return error.responseText ? error.responseText : error;
-			}).then(function (response) {
-				BusyIndicator.hide();
-				return response;
-			}.bind(this));
-		}
-		// ,
-		// getAllFacesAsVectors: function (oFace) {
-		// 	//{"0": [{"id": "v0", "vector": [0.22, …, 0.93]}, {"id": "v1", "vector": [0.39, …, 0.69]}]}
-		// 	var aSearchFace = [];
-		// 	aSearchFace.push(oFace.getVectorObject());
-		// 	return {
-		// 		"0": aSearchFace,
-		// 		"1": this.getFaces().filter(function (oFace) {
-		// 			return oFace.hasVectors();
-		// 		}).map(function (oFace) {
-		// 			return oFace.getVectorObject();
-		// 		})
-		// 	};
-		// }
+				var me = this;
+				BusyIndicator.show(0);
+				return FaceService.getBearerToken().then(function (token) {
+					me.tokenInfo = JSON.parse(token);
+					var form = new FormData();
+					form.append("files", file.content, file.name);
+					if (form.fd) {
+						form = form.fd;
+					}
+					return FaceService.getFaceFeatures(me.tokenInfo.access_token, form);
+				}).catch(function (error) {
+					jQuery.sap.log.error(error);
+					return error.responseText ? error.responseText : error;
+				}).then(function (response) {
+					BusyIndicator.hide();
+					return response;
+				}.bind(this));
+			}
+			// ,
+			// getAllFacesAsVectors: function (oFace) {
+			// 	//{"0": [{"id": "v0", "vector": [0.22, …, 0.93]}, {"id": "v1", "vector": [0.39, …, 0.69]}]}
+			// 	var aSearchFace = [];
+			// 	aSearchFace.push(oFace.getVectorObject());
+			// 	return {
+			// 		"0": aSearchFace,
+			// 		"1": this.getFaces().filter(function (oFace) {
+			// 			return oFace.hasVectors();
+			// 		}).map(function (oFace) {
+			// 			return oFace.getVectorObject();
+			// 		})
+			// 	};
+			// }
 	});
 });

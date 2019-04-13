@@ -12,6 +12,7 @@ modules:
       memory: 256M
     requires:
       - name: rt_FaceRecognition_appRouter
+      - name: dest_FaceRecognition
       - name: srv_api
         group: destinations
         properties:

@@ -61,14 +61,14 @@ sap.ui.define([
 				// "authorization": "Basic " + auth,
 				"accept": "application/json"
 			};
-			return this.http("/oauth/token?grant_type=client_credentials").get(headers);
+			return this.http("oauth/token?grant_type=client_credentials").get(headers);
 		},
 		getFaceFeatures: function (token, body) {
 			var headers = {
 				"authorization": "Bearer " + token,
 				"accept": "application/json"
 			};
-			return this.http("/api/v2alpha1/image/face-feature-extraction/").post(headers, body).catch(function (error) {
+			return this.http("api/v2alpha1/image/face-feature-extraction/").post(headers, body).catch(function (error) {
 				return error;
 			});
 		},
