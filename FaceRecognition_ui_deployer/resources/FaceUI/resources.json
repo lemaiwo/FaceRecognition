@@ -1,0 +1,324 @@
+{
+    "resources": [
+        {
+            "name": "cmistest.html"
+        },
+        {
+            "name": "Component-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "Component-preload.js",
+            "merged": true
+        },
+        {
+            "name": "Component.js"
+        },
+        {
+            "name": "controller\\App-dbg.controller.js",
+            "isDebug": true
+        },
+        {
+            "name": "controller\\App.controller.js"
+        },
+        {
+            "name": "controller\\BaseController-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "controller\\BaseController.js"
+        },
+        {
+            "name": "controller\\dialog\\Person-dbg.controller.js",
+            "isDebug": true
+        },
+        {
+            "name": "controller\\dialog\\Person.controller.js"
+        },
+        {
+            "name": "css\\style-dbg.css",
+            "isDebug": true
+        },
+        {
+            "name": "css\\style.css"
+        },
+        {
+            "name": "di.code-validation.core_issues.json"
+        },
+        {
+            "name": "i18n\\i18n.properties",
+            "raw": "i18n\\i18n.properties"
+        },
+        {
+            "name": "index.html"
+        },
+        {
+            "name": "localService\\metadata.xml"
+        },
+        {
+            "name": "manifest.json"
+        },
+        {
+            "name": "model\\Face-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "model\\Face.js"
+        },
+        {
+            "name": "model\\FaceState-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "model\\FaceState.js"
+        },
+        {
+            "name": "model\\models-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "model\\models.js"
+        },
+        {
+            "name": "neo-app.json"
+        },
+        {
+            "name": "service\\FaceService-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "service\\FaceService.js"
+        },
+        {
+            "name": "service\\RepoService-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "service\\RepoService.js"
+        },
+        {
+            "name": "service\\Service-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "service\\Service.js"
+        },
+        {
+            "name": "serviceBinding-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "serviceBinding.js"
+        },
+        {
+            "name": "test\\integration\\AllJourneys-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "test\\integration\\AllJourneys.js"
+        },
+        {
+            "name": "test\\integration\\navigationJourney-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "test\\integration\\navigationJourney.js"
+        },
+        {
+            "name": "test\\integration\\opaTests.qunit.html"
+        },
+        {
+            "name": "test\\integration\\pages\\App-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "test\\integration\\pages\\App.js"
+        },
+        {
+            "name": "test\\integration\\pages\\Common-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "test\\integration\\pages\\Common.js"
+        },
+        {
+            "name": "test\\unit\\allTests-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "test\\unit\\allTests.js"
+        },
+        {
+            "name": "test\\unit\\controller\\App-dbg.controller.js",
+            "isDebug": true
+        },
+        {
+            "name": "test\\unit\\controller\\App.controller.js"
+        },
+        {
+            "name": "test\\unit\\unitTests.qunit.html"
+        },
+        {
+            "name": "tmp\\cmistest.html"
+        },
+        {
+            "name": "tmp\\Component-preload.js",
+            "merged": true
+        },
+        {
+            "name": "tmp\\Component.js"
+        },
+        {
+            "name": "tmp\\controller\\App.controller.js"
+        },
+        {
+            "name": "tmp\\controller\\BaseController.js"
+        },
+        {
+            "name": "tmp\\controller\\dialog\\Person.controller.js"
+        },
+        {
+            "name": "tmp\\css\\style.css"
+        },
+        {
+            "name": "tmp\\i18n\\i18n.properties",
+            "raw": "i18n\\i18n.properties"
+        },
+        {
+            "name": "tmp\\index.html"
+        },
+        {
+            "name": "tmp\\localService\\metadata.xml"
+        },
+        {
+            "name": "tmp\\manifest.json"
+        },
+        {
+            "name": "tmp\\model\\Face.js"
+        },
+        {
+            "name": "tmp\\model\\FaceState.js"
+        },
+        {
+            "name": "tmp\\model\\models.js"
+        },
+        {
+            "name": "tmp\\service\\FaceService.js"
+        },
+        {
+            "name": "tmp\\service\\RepoService.js"
+        },
+        {
+            "name": "tmp\\service\\Service.js"
+        },
+        {
+            "name": "tmp\\serviceBinding.js"
+        },
+        {
+            "name": "tmp\\test\\integration\\AllJourneys.js"
+        },
+        {
+            "name": "tmp\\test\\integration\\navigationJourney.js"
+        },
+        {
+            "name": "tmp\\test\\integration\\opaTests.qunit.html"
+        },
+        {
+            "name": "tmp\\test\\integration\\pages\\App.js"
+        },
+        {
+            "name": "tmp\\test\\integration\\pages\\Common.js"
+        },
+        {
+            "name": "tmp\\test\\unit\\allTests.js"
+        },
+        {
+            "name": "tmp\\test\\unit\\controller\\App.controller.js"
+        },
+        {
+            "name": "tmp\\test\\unit\\unitTests.qunit.html"
+        },
+        {
+            "name": "tmp\\util\\ImageHandler.js"
+        },
+        {
+            "name": "tmp\\view\\App.view.xml"
+        },
+        {
+            "name": "tmp\\view\\dialog\\Person.fragment.xml"
+        },
+        {
+            "name": "tmp-dbg\\Component.js"
+        },
+        {
+            "name": "tmp-dbg\\controller\\App.controller.js"
+        },
+        {
+            "name": "tmp-dbg\\controller\\BaseController.js"
+        },
+        {
+            "name": "tmp-dbg\\controller\\dialog\\Person.controller.js"
+        },
+        {
+            "name": "tmp-dbg\\css\\style.css"
+        },
+        {
+            "name": "tmp-dbg\\model\\Face.js"
+        },
+        {
+            "name": "tmp-dbg\\model\\FaceState.js"
+        },
+        {
+            "name": "tmp-dbg\\model\\models.js"
+        },
+        {
+            "name": "tmp-dbg\\service\\FaceService.js"
+        },
+        {
+            "name": "tmp-dbg\\service\\RepoService.js"
+        },
+        {
+            "name": "tmp-dbg\\service\\Service.js"
+        },
+        {
+            "name": "tmp-dbg\\serviceBinding.js"
+        },
+        {
+            "name": "tmp-dbg\\test\\integration\\AllJourneys.js"
+        },
+        {
+            "name": "tmp-dbg\\test\\integration\\navigationJourney.js"
+        },
+        {
+            "name": "tmp-dbg\\test\\integration\\pages\\App.js"
+        },
+        {
+            "name": "tmp-dbg\\test\\integration\\pages\\Common.js"
+        },
+        {
+            "name": "tmp-dbg\\test\\unit\\allTests.js"
+        },
+        {
+            "name": "tmp-dbg\\test\\unit\\controller\\App.controller.js"
+        },
+        {
+            "name": "tmp-dbg\\util\\ImageHandler.js"
+        },
+        {
+            "name": "util\\ImageHandler-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "util\\ImageHandler.js"
+        },
+        {
+            "name": "view\\App.view.xml"
+        },
+        {
+            "name": "view\\dialog\\Person.fragment.xml"
+        },
+        {
+            "name": "xs-app.json"
+        }
+    ]
+}

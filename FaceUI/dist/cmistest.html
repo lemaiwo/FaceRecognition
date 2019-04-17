@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Use CMIS from HTML5 Application</title>
+<script type="text/javascript">
+	function setFilename() {
+		var thefile = document.getElementById('filename').value.split('\\').pop();
+		document.getElementById("cmisname").value = thefile;//.value;
+	}
+
+	function getChildren() {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				var children = obj = JSON.parse(this.responseText);
+				var str = "<ul>";
+				var repoUrl = "/cmis/0d1793f590788bc65bc9b3c5/root/"
+				for (var i = 0; i <children.objects.length; i++) {
+					if (children.objects[i].object.properties["cmis:baseTypeId"].value == 'cmis:folder') {
+						str += '<li>'
+								+ children.objects[i].object.properties["cmis:name"].value
+								+ ' (folder)</li>';
+					} else {
+						var name = children.objects[i].object.properties["cmis:name"].value;
+						str += '<li><a href="' + repoUrl + name + '">' + name
+								+ '</a></li>';
+					}
+				}
+				str += "</ul>";
+				document.getElementById("listchildren").innerHTML = str;
+			}
+		};
+		xhttp.open("GET",
+				"/cmis/0d1793f590788bc65bc9b3c5/root?cmisselector=children",
+				true);
+		xhttp.send();
+	}
+</script>
+</head>
+<body>
+	<h1>Document Service from HTML App</h1>
+	<p>
+		<a href="https://<your-proxy-url>"> Link
+			to</a> Repository Info from Repository (requires authentication) <br />
+		<a href="/cmis/0d1793f590788bc65bc9b3c5?cmisselector=repositoryInfo">Link
+			using destination to </a> Repository Info from Repository
+	</p>
+	<hr/>
+	Upload a file to the document service (browse, then press upload)
+	<form action="/cmis/0d1793f590788bc65bc9b3c5/root"
+		enctype="multipart/form-data" method="post">
+		<p>
+			Please specify a file:<br> <input type="file" id="filename"
+				onchange="setFilename()" name="datafile" size="40">
+		</p>
+		<div>
+			<input type="submit" value="Upload"> 
+				<input name="cmisaction" type="hidden" value="createDocument"/> 
+				<input name="propertyId[0]" type="hidden" value="cmis:objectTypeId"/> 
+				<input name="propertyValue[0]" type="hidden" value="cmis:document"/> 
+				<input name="propertyId[1]" type="hidden" value="cmis:name"/> 
+				<input name="propertyValue[1]" type="hidden" id="cmisname"/>
+		</div>
+	</form>
+	<hr/>
+	List all objects in the root folder of your repository (press button
+	after uploding to refresh)
+	<br/>
+	<input type="button" onclick="getChildren()" value="List">
+	<div id="listchildren"></div>
+</body>
+</html>

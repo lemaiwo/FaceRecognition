@@ -1,0 +1,35 @@
+<mvc:View controllerName="be.wl.ml.FaceUI.controller.App" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:mvc="sap.ui.core.mvc"
+	displayBlock="true" xmlns="sap.m" xmlns:u="sap.ui.unified" xmlns:core="sap.ui.core" xmlns:f="sap.f">
+	<App id="idAppControl">
+		<pages>
+			<Page busy="{/busy}">
+				<headerContent>
+					<Toolbar >
+						<u:FileUploader name="myFileUpload" buttonOnly="true" icon="sap-icon://add-employee" iconOnly="true"
+							tooltip="Upload your file to the local server" sameFilenameAllowed="true" change=".addPhoto"/>
+						<ToolbarSpacer/>
+						<Title text="Face Recognition"/>
+						<ToolbarSpacer/>
+						<!--<u:FileUploader name="myFileUploadcheck" buttonOnly="true" buttonText="Test" icon="sap-icon://add-photo" iconOnly="false"-->
+						<!--	tooltip="Upload your file to the local server" sameFilenameAllowed="true" change=".testCheckPhoto"/>-->
+						<u:FileUploader name="myFileUploadcheck" buttonOnly="true" icon="sap-icon://add-photo" iconOnly="true"
+							tooltip="Upload your file to the local server" sameFilenameAllowed="true" change=".checkPhoto"/>
+					</Toolbar>
+				</headerContent>
+				<content>
+					<List items="{path: '/faces'}">
+						<CustomListItem>
+							<HBox>
+								<Button class="sapUiSmallMargin" type="Reject" icon="sap-icon://delete" press="onDeleteFace"/>
+								<f:Avatar src="{imageuri}" displaySize="L"></f:Avatar>
+								<VBox class="sapUiMediumMargin">
+									<Title level="H3" text="{firstname} {lastname}"/>
+								</VBox>
+							</HBox>
+						</CustomListItem>
+					</List>
+				</content>
+			</Page>
+		</pages>
+	</App>
+</mvc:View>

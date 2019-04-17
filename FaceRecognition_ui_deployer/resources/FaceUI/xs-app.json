@@ -1,0 +1,38 @@
+{
+  "welcomeFile": "/index.html",
+  "authenticationMethod": "route",
+  "logout": {
+    "logoutEndpoint": "/do/logout"
+  },
+  "routes": [
+    {
+      "source": "/odata/v2",
+      "authenticationType": "none",
+      "destination": "srv_api",
+      "csrfProtection": false
+    },
+    {
+      "source": "/api/v2alpha1/image/face-feature-extraction",
+      "authenticationType": "none",
+      "destination": "ml_api",
+      "csrfProtection": false
+    },
+    {
+      "source": "/oauth/token",
+      "destination": "ml_auth_api",
+      "csrfProtection": false
+    },
+    {
+      "source": "/cmisproxysap",
+      "authenticationType": "none",
+      "destination": "documentservicewl",
+      "csrfProtection": false
+    },
+    {
+      "source": "^(.*)$",
+      "target": "$1",
+      "service": "html5-apps-repo-rt",
+      "authenticationType": "xsuaa"
+    }
+  ]
+}
