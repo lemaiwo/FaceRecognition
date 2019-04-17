@@ -7,6 +7,8 @@ modules:
   - name: FaceRecognition_appRouter
     type: approuter.nodejs
     path: FaceRecognition_appRouter
+    # properties:
+    #   ALLOW_MOCKED_AUTH_HEADER: true
     parameters:
       disk-quota: 256M
       memory: 256M
@@ -57,9 +59,10 @@ modules:
     properties:
       TARGET_RUNTIME: tomee
       buildpack: sap_java_buildpack
-      ALLOW_MOCKED_AUTH_HEADER: true
+      #ALLOW_MOCKED_AUTH_HEADER: true
       JAVA_OPTS: '-XX:MaxMetaspaceSize=256M'
       JBP_CONFIG_SAPJVM_MEMORY_SIZES: 'metaspace:256m..'
+      SAP_JWT_TRUST_ACL: '[{"clientid" : "*", "identityzone" : "*"}]'
   - name: FaceUI
     type: html5
     path: FaceUI

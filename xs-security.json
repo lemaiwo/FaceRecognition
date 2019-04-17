@@ -6,6 +6,10 @@
     {
       "name": "uaa.user",
       "description": "UAA"
+    },
+    {
+      "name": "$XSAPPNAME.Display",
+      "description": "display"
     }
   ],
   "role-templates": [
@@ -14,6 +18,12 @@
       "description": "UAA",
       "scope-references": [
         "uaa.user"
+      ]
+    },{
+      "name": "Viewer",
+      "description": "Required to view things in our solution",
+      "scope-references"     : [
+        "$XSAPPNAME.Display"
       ]
     }
   ]
