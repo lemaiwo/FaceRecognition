@@ -1,0 +1,35 @@
+{
+  "definitions": {
+    "be.wl.ml.facerecognition.Faces": {
+      "kind": "entity",
+      "elements": {
+        "ID": {
+          "key": true,
+          "indexNo": 1,
+          "type": "cds.Integer"
+        },
+        "Firstname": {
+          "indexNo": 2,
+          "type": "cds.String"
+        },
+        "Lastname": {
+          "indexNo": 3,
+          "type": "cds.String"
+        },
+        "Vectors": {
+          "indexNo": 4,
+          "type": "cds.String"
+        },
+        "Image": {
+          "indexNo": 5,
+          "type": "cds.String"
+        }
+      }
+    }
+  },
+  "version": {
+    "creator": "CDS Compiler v1.1.3",
+    "csn": "0.1.0"
+  },
+  "namespace": "be.wl.ml.facerecognition"
+}

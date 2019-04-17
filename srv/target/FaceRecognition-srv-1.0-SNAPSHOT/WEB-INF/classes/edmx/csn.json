@@ -1,0 +1,126 @@
+{
+  "definitions": {
+    "FaceRecognitionService": {
+      "kind": "service",
+      "@source": "srv\\my-service.cds"
+    },
+    "FaceRecognitionService.Face": {
+      "kind": "entity",
+      "source": "be.wl.ml.facerecognition.Faces",
+      "elements": {
+        "ID": {
+          "origin": "be.wl.ml.facerecognition.Faces..ID",
+          "indexNo": 1,
+          "value": {
+            "=": "Faces.ID"
+          },
+          "key": true,
+          "type": "cds.Integer",
+          "@cds.persistence.name": "ID"
+        },
+        "Firstname": {
+          "origin": "be.wl.ml.facerecognition.Faces..Firstname",
+          "indexNo": 2,
+          "value": {
+            "=": "Faces.Firstname"
+          },
+          "type": "cds.String",
+          "@cds.persistence.name": "FIRSTNAME"
+        },
+        "Lastname": {
+          "origin": "be.wl.ml.facerecognition.Faces..Lastname",
+          "indexNo": 3,
+          "value": {
+            "=": "Faces.Lastname"
+          },
+          "type": "cds.String",
+          "@cds.persistence.name": "LASTNAME"
+        },
+        "Vectors": {
+          "origin": "be.wl.ml.facerecognition.Faces..Vectors",
+          "indexNo": 4,
+          "value": {
+            "=": "Faces.Vectors"
+          },
+          "type": "cds.String",
+          "@cds.persistence.name": "VECTORS"
+        },
+        "Image": {
+          "origin": "be.wl.ml.facerecognition.Faces..Image",
+          "indexNo": 5,
+          "value": {
+            "=": "Faces.Image"
+          },
+          "type": "cds.String",
+          "@cds.persistence.name": "IMAGE"
+        }
+      },
+      "@cds.persistence.name": "FACERECOGNITIONSERVICE_FACE"
+    },
+    "FaceRecognitionService.findFaceByImage": {
+      "kind": "action",
+      "params": {
+        "Image": {
+          "kind": "param",
+          "indexNo": 1,
+          "type": "cds.String",
+          "@cds.persistence.name": "IMAGE"
+        }
+      },
+      "returns": {
+        "type": "FaceRecognitionService.Face"
+      }
+    },
+    "FaceRecognitionService.findFaceByVector": {
+      "kind": "action",
+      "params": {
+        "NewVector": {
+          "kind": "param",
+          "indexNo": 1,
+          "type": "cds.String",
+          "@cds.persistence.name": "NEWVECTOR"
+        }
+      },
+      "returns": {
+        "type": "FaceRecognitionService.Face"
+      }
+    },
+    "be.wl.ml.facerecognition.Faces": {
+      "kind": "entity",
+      "elements": {
+        "ID": {
+          "key": true,
+          "indexNo": 1,
+          "type": "cds.Integer",
+          "@cds.persistence.name": "ID"
+        },
+        "Firstname": {
+          "indexNo": 2,
+          "type": "cds.String",
+          "@cds.persistence.name": "FIRSTNAME"
+        },
+        "Lastname": {
+          "indexNo": 3,
+          "type": "cds.String",
+          "@cds.persistence.name": "LASTNAME"
+        },
+        "Vectors": {
+          "indexNo": 4,
+          "type": "cds.String",
+          "@cds.persistence.name": "VECTORS"
+        },
+        "Image": {
+          "indexNo": 5,
+          "type": "cds.String",
+          "@cds.persistence.name": "IMAGE"
+        }
+      },
+      "@cds.persistence.name": "BE_WL_ML_FACERECOGNITION_FACES"
+    }
+  },
+  "version": {
+    "creator": "CDS Compiler v1.1.3",
+    "csn": "0.1.0"
+  },
+  "@sql_mapping": "plain"
+}

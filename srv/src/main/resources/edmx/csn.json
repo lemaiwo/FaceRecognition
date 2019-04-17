@@ -2,7 +2,7 @@
   "definitions": {
     "FaceRecognitionService": {
       "kind": "service",
-      "@source": "srv/my-service.cds"
+      "@source": "srv\\my-service.cds"
     },
     "FaceRecognitionService.Face": {
       "kind": "entity",
