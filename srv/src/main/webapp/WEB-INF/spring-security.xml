@@ -18,6 +18,7 @@
 		authentication-manager-ref="authenticationManager"
 		use-expressions="true">
 		<sec:anonymous enabled="false" />
+		<sec:csrf disabled="true"/>
 		<sec:intercept-url pattern="/odata/v2/**" access="isAuthenticated()" method="GET" />
 		<sec:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<sec:access-denied-handler ref="oauthAccessDeniedHandler" />

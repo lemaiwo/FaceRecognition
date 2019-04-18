@@ -15,6 +15,12 @@
 	<properties>
 		<packageName>be.wl.ml.face</packageName>
 	</properties>
+	<repositories>
+		<repository>
+			<id>my-local-repo</id>
+			<url>file://${project.basedir}/../libs</url>
+		</repository>
+	</repositories>
 	<build>
 		<finalName>${project.artifactId}-${project.version}</finalName>
 		<resources>
@@ -182,6 +188,37 @@
 			<artifactId>api</artifactId>
 			<version>1.3.1</version>
 			<scope>provided</scope>
+		</dependency>
+		<!-- Authentication and Authorization imports with Spring Security -->
+		<dependency>
+			<groupId>com.sap.xs2.security</groupId>
+			<artifactId>security-commons</artifactId>
+			<version>0.28.6</version>
+		</dependency>
+		<dependency>
+		  <groupId>com.sap.xs2.security</groupId>
+		  <artifactId>java-container-security</artifactId> <!-- 1 -->
+		  <version>0.28.6</version>
+		</dependency>
+		<dependency>
+		  <groupId>com.sap.xs2.security</groupId>
+		  <artifactId>java-container-security-api</artifactId>
+		  <version>0.28.6</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.springframework.security</groupId>
+		  <artifactId>spring-security-jwt</artifactId>
+		  <version>1.0.9.RELEASE</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.springframework.security.oauth</groupId>
+		  <artifactId>spring-security-oauth2</artifactId>
+		  <version>2.3.3.RELEASE</version>
+		</dependency>
+		<dependency>
+		  <groupId>com.sap.security.nw.sso.linuxx86_64.opt</groupId>
+		  <artifactId>sapjwt.linuxx86_64</artifactId>
+		  <version>1.1.19</version>
 		</dependency>
 	</dependencies>
 </project>
