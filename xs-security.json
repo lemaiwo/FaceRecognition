@@ -20,7 +20,7 @@
         "uaa.user"
       ]
     },{
-      "name": "Viewer",
+      "name": "AccessRole",
       "description": "Required to view things in our solution",
       "scope-references"     : [
         "$XSAPPNAME.Display"
