@@ -7,7 +7,7 @@
   "routes": [
     {
       "source": "/odata/v2",
-      "authenticationType": "none",
+      "authenticationType": "xsuaa",
       "destination": "srv_api",
       "csrfProtection": false
     },

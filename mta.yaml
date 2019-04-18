@@ -52,6 +52,9 @@ modules:
         properties:
           url: '${default-url}'
     requires:
+      - name: uaa_FaceRecognition
+        properties:
+          SAP_JWT_TRUST_ACL: '[{"clientid" : "*", "identityzone" : "*"}]'
       - name: ml-service
       - name: FaceRecognition-hdi-container
         properties:
@@ -62,7 +65,6 @@ modules:
       #ALLOW_MOCKED_AUTH_HEADER: true
       JAVA_OPTS: '-XX:MaxMetaspaceSize=256M'
       JBP_CONFIG_SAPJVM_MEMORY_SIZES: 'metaspace:256m..'
-      SAP_JWT_TRUST_ACL: '[{"clientid" : "*", "identityzone" : "*"}]'
   - name: FaceUI
     type: html5
     path: FaceUI
